@@ -1,0 +1,18 @@
+{
+    "epilation_maillot": [{"name": "Maillot échancré", "duration": "35 min", "price": 35}, {"name": "Maillot intégral", "duration": "45 min", "price": 45}],
+    "epilation_fesses": [{"name": "SIF", "duration": "15 min", "price": 12}, {"name": "Fesses", "duration": "15 min", "price": 15}, {"name": "Fesses + SIF", "duration": "25 min", "price": 20}],
+    "epilation_bras_aisselles": [{"name": "Aisselles", "duration": "20 min", "price": 12}, {"name": "Demi-bras", "duration": "20 min", "price": 19}, {"name": "Bras complets", "duration": "30 min", "price": 28}],
+    "epilation_dos": [{"name": "Épaules", "duration": "20 min", "price": 15}, {"name": "Dos sauf nuque et épaules", "duration": "25 min", "price": 27}, {"name": "Dos complet", "duration": "35 min", "price": 40}],
+    "epilation_jambes": [{"name": "Demi-jambes", "duration": "20 min", "price": 18}, {"name": "Jambes complètes", "duration": "45 min", "price": 32}],
+    "epilation_torse": [{"name": "Torse ou ventre", "duration": "15 min", "price": 19}, {"name": "Torse + ventre", "duration": "30 min", "price": 30}],
+    "epilation_corps_complet": [{"name": "Corps complet", "duration": "2h30", "price": 132}],
+    "epilation_sourcils": [{"name": "Sourcils", "duration": "15 min", "price": 14}],
+    "epilation_visage": [{"name": "Nez", "duration": "10 min", "price": 6}, {"name": "Pommettes", "duration": "10 min", "price": 6}, {"name": "Moustache", "duration": "15 min", "price": 8}, {"name": "Oreilles", "duration": "10 min", "price": 8}, {"name": "Nuque", "duration": "10 min", "price": 12}, {"name": "Barbe", "duration": "30 min", "price": 24}, {"name": "Visage complet", "duration": "25 min", "price": 32}],
+    "tonte_haut_corps": [{"name": "Dos", "duration": "15 min", "price": 12}, {"name": "Torse", "duration": "15 min", "price": 12}],
+    "manucure": [{"name": "Manucure", "duration": "30 min", "price": 25}],
+    "ongles_pieds": [{"name": "Limage ongles pieds", "duration": "25 min", "price": 25}],
+    "soins_visage": [{"name": "Soin anti-acné", "duration": "40 min", "price": 70}, {"name": "Hydrapure", "duration": "1h", "price": 110}, {"name": "Hydrapure cure 3 séances", "duration": "1h", "price": 265}, {"name": "Hifu", "duration": "1h", "price": 250}, {"name": "Consultation Dct Janka", "duration": "30 min", "price": 35}, {"name": "Soin visage express", "duration": "45 min", "price": 55}, {"name": "Soin anti-âge excellence", "duration": "1h10", "price": 95}],
+    "massages": [{"name": "Massage pierres chaudes", "duration": "1h", "price": 85}, {"name": "Massage bambous", "duration": "1h", "price": 85}],
+    "gommage": [{"name": "Gommage corps", "duration": "45 min", "price": 60}],
+    "blanchiment_dentaire": [{"name": "Blanchiment dentaire", "duration": "1h15", "price": 80}]
+  }
