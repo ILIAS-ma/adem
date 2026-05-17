@@ -3,340 +3,482 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BeautyVoice — CRM IA</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
+    <title>BeautyVoice — Agenda</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-      * {
-        font-family: "Space Grotesk", sans-serif;
+      * { font-family: ui-sans-serif, system-ui, sans-serif; box-sizing: border-box; }
+      body { background: #ffffff; color: #000000; }
+      ::-webkit-scrollbar { width: 3px; }
+      ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 4px; }
+      .row-venu td { font-weight: 700; }
+      .row-absent td { opacity: 0.38; }
+      .note-input {
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid #e5e7eb;
+        outline: none;
+        font-size: 12px;
+        color: #6b7280;
+        padding: 3px 0;
+        background: transparent;
+        margin-top: 4px;
       }
-      body {
-        background: #080c14;
-      }
-      .mono {
-        font-family: "Space Mono", monospace;
-      }
-      .card {
-        background: #0d1420;
-        border: 1px solid #1a2535;
-        border-radius: 16px;
-      }
-      .card-glow {
-        box-shadow: 0 0 30px rgba(16, 185, 129, 0.05);
-      }
-      .badge-prestation {
-        background: rgba(99, 102, 241, 0.15);
-        color: #a5b4fc;
-        border-radius: 6px;
+      .btn-raw {
         font-size: 11px;
-        padding: 3px 10px;
         font-weight: 600;
-      }
-      .badge-statut {
-        background: rgba(245, 158, 11, 0.15);
-        color: #fbbf24;
-        border-radius: 20px;
-        font-size: 11px;
-        padding: 2px 10px;
-        font-weight: 600;
-      }
-      .badge-ok {
-        background: rgba(16, 185, 129, 0.15);
-        color: #34d399;
-        border-radius: 20px;
-        font-size: 11px;
-        padding: 2px 10px;
-        font-weight: 600;
-      }
-      .kpi-val {
-        font-family: "Space Mono", monospace;
-        font-size: 2.6rem;
-        line-height: 1;
-        font-weight: 700;
-      }
-      .pulse {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #10b981;
-        display: inline-block;
-        animation: pulse 1.4s infinite;
-      }
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
-          transform: scale(1);
-        }
-        50% {
-          opacity: 0.4;
-          transform: scale(1.5);
-        }
-      }
-      ::-webkit-scrollbar {
-        width: 3px;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #1a2535;
-        border-radius: 4px;
-      }
-      thead th {
-        color: #3d5470;
-        font-size: 11px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-      tbody tr {
-        border-bottom: 1px solid #0f1a27;
+        padding: 2px 7px;
+        border: 1px solid #e5e7eb;
+        background: white;
+        cursor: pointer;
+        letter-spacing: 0.02em;
         transition: background 0.1s;
       }
-      tbody tr:hover td {
-        background: #0f1a27;
+      .btn-raw:hover { background: #f9fafb; }
+      .btn-raw.active-venu { border-color: #000; background: #000; color: #fff; }
+      .btn-raw.active-absent { border-color: #6b7280; color: #6b7280; }
+      .btn-panique {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border: 1px solid #000;
+        background: white;
+        cursor: pointer;
+        margin-left: 6px;
       }
-      .gradient-text {
-        background: linear-gradient(135deg, #10b981, #6366f1);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+      .btn-panique:hover { background: #000; color: #fff; }
+      .btn-combler {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border: 1px solid #000;
+        background: #fff;
+        cursor: pointer;
+        display: none;
+        margin-top: 6px;
+        width: 100%;
       }
+      .btn-combler.visible { display: block; }
+      .btn-combler:hover { background: #000; color: #fff; }
+      .modal-overlay {
+        display: none;
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.35);
+        z-index: 50;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-overlay.open { display: flex; }
+      .modal-box {
+        background: #fff;
+        border: 1.5px solid #000;
+        padding: 32px;
+        max-width: 460px;
+        width: 90%;
+      }
+      .nav-link {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 4px 0;
+        border-bottom: 2px solid transparent;
+        transition: color 0.15s, border-color 0.15s;
+      }
+      .nav-link.active { color: #000; border-bottom-color: #000; }
+      .nav-link:hover { color: #000; }
+      .relance-ok { font-size: 11px; color: #6b7280; }
+      .relance-fail { font-size: 11px; color: #000; font-weight: 700; }
+      .btn-relancer {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border: 1px solid #000;
+        background: white;
+        cursor: pointer;
+        margin-left: 4px;
+      }
+      .btn-relancer:hover { background: #000; color: #fff; }
+      .relance-sent { font-size: 11px; color: #6b7280; font-weight: 400; text-decoration: line-through; }
+      .kpi-block { border-right: 1px solid #e5e7eb; padding: 0 24px; }
+      .kpi-block:last-child { border-right: none; }
+      thead th {
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #6b7280;
+        font-weight: 600;
+        padding: 10px 12px;
+        text-align: left;
+      }
+      tbody td { padding: 12px; font-size: 13px; vertical-align: top; }
+      tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.1s; }
+      tbody tr:hover { background: #fafafa; }
     </style>
   </head>
-  <body>
-    <div class="min-h-screen flex flex-col">
-      <header
-        class="border-b border-slate-800/60 py-4 px-8 flex justify-between items-center"
-        style="background: #080c14"
-      >
-        <div class="flex items-center gap-3">
-          <div
-            class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center"
-          >
-            <span class="text-emerald-400 text-sm">✦</span>
-          </div>
-          <div>
-            <h1 class="text-base font-bold text-white tracking-tight">
-              BeautyVoice <span class="gradient-text">SaaS</span>
-            </h1>
-            <p class="text-xs text-slate-500">
-              Réceptionniste IA · PostgreSQL Live
-            </p>
-          </div>
-        </div>
-        <span
-          class="flex items-center gap-2 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full"
-        >
-          <span class="pulse"></span> En direct
-        </span>
-      </header>
+  <body class="min-h-screen flex flex-col">
 
-      <main class="flex-1 p-8 space-y-6">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="card card-glow p-6">
-            <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">
-              Appels Totaux
-            </p>
-            <p id="kpi-calls" class="kpi-val text-white">—</p>
-            <p class="text-xs text-slate-600 mt-2">via ElevenLabs</p>
-          </div>
-          <div class="card p-6">
-            <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">
-              RDV Pris
-            </p>
-            <p id="kpi-rdv" class="kpi-val text-emerald-400">—</p>
-            <p class="text-xs text-slate-600 mt-2">en base Supabase</p>
-          </div>
-          <div class="card p-6">
-            <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">
-              Conversion
-            </p>
-            <p id="kpi-conv" class="kpi-val text-indigo-400">—%</p>
-            <p class="text-xs text-slate-600 mt-2">appels → réservations</p>
-          </div>
-          <div class="card card-glow p-6">
-            <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">
-              Chiffre d'Affaires
-            </p>
-            <p id="kpi-revenue" class="kpi-val text-amber-400">—€</p>
-            <p class="text-xs text-slate-600 mt-2">généré par l'IA</p>
-          </div>
+    <!-- NAV -->
+    <nav style="border-bottom: 1px solid #e5e7eb;" class="px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-8">
+        <span class="text-base font-black tracking-tight">BEAUTYVOICE</span>
+        <div class="flex items-center gap-6">
+          <span class="nav-link active" onclick="setNav(this)">Agenda</span>
+          <span class="nav-link" onclick="setNav(this)">Clients</span>
+          <span class="nav-link" onclick="setNav(this)">Relances</span>
+          <span class="nav-link" onclick="setNav(this)">Statistiques</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-6">
+        <span class="text-xs text-gray-500">Taux de présence : <span id="taux-presence" class="font-bold text-black">92%</span></span>
+        <span id="live-badge" class="text-xs font-bold tracking-widest uppercase border border-black px-3 py-1">En direct</span>
+      </div>
+    </nav>
+
+    <!-- KPI STRIP -->
+    <div style="border-bottom: 1px solid #e5e7eb;" class="px-8 py-5 flex items-center">
+      <div class="kpi-block" style="padding-left:0">
+        <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Appels</p>
+        <p id="kpi-calls" class="text-3xl font-black">—</p>
+      </div>
+      <div class="kpi-block">
+        <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">RDV Pris</p>
+        <p id="kpi-rdv" class="text-3xl font-black">—</p>
+      </div>
+      <div class="kpi-block">
+        <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Conversion</p>
+        <p id="kpi-conv" class="text-3xl font-black">—%</p>
+      </div>
+      <div class="kpi-block">
+        <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Chiffre d'Affaires</p>
+        <p id="kpi-revenue" class="text-3xl font-black">—€</p>
+      </div>
+    </div>
+
+    <!-- MAIN LAYOUT -->
+    <div class="flex flex-1 overflow-hidden">
+
+      <!-- LEFT : TABLE AGENDA -->
+      <div class="flex-1 overflow-y-auto p-8">
+        <div class="flex items-baseline justify-between mb-6">
+          <h2 class="text-lg font-black tracking-tight">Rendez-vous du jour</h2>
+          <span id="total-badge" class="text-xs text-gray-400">0 entrées</span>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="card p-6">
-            <p class="text-xs text-slate-500 uppercase tracking-widest mb-5">
-              Top Prestations
-            </p>
-            <div style="max-width: 220px; margin: 0 auto">
-              <canvas id="chartPrestations"></canvas>
-            </div>
-            <p id="empty-chart" class="text-center text-slate-600 text-xs mt-4">
-              Aucune donnée
-            </p>
-          </div>
-
-          <div class="lg:col-span-2 card p-6 flex flex-col">
-            <div class="flex justify-between items-center mb-5">
-              <h3 class="text-sm font-bold text-white">
-                Flux Clients en temps réel
-              </h3>
-              <span id="total-badge" class="text-xs text-slate-500 mono"
-                >0 entrées</span
-              >
-            </div>
-            <div class="flex-1 overflow-y-auto max-h-[420px]">
-              <table class="w-full text-left border-collapse">
-                <thead>
-                  <tr>
-                    <th class="py-3 pr-4">Date</th>
-                    <th class="py-3 pr-4">Client</th>
-                    <th class="py-3 pr-4">Contact</th>
-                    <th class="py-3 pr-4">Prestation</th>
-                    <th class="py-3 pr-4">Prix</th>
-                    <th class="py-3">Statut</th>
-                  </tr>
-                </thead>
-                <tbody id="leads-table">
-                  <tr>
-                    <td
-                      colspan="6"
-                      class="py-12 text-center text-slate-600 text-sm"
-                    >
-                      En attente de données…
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <div style="border: 1px solid #e5e7eb;">
+          <table class="w-full border-collapse">
+            <thead style="border-bottom: 2px solid #000;">
+              <tr>
+                <th>Heure</th>
+                <th>Client</th>
+                <th>Prestation</th>
+                <th>Prix</th>
+                <th>Statut</th>
+                <th>Relance SMS</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="leads-table">
+              <tr><td colspan="7" class="text-center py-12 text-gray-400 text-sm">En attente de données…</td></tr>
+            </tbody>
+          </table>
         </div>
-      </main>
+      </div>
+
+      <!-- RIGHT : WAITLIST -->
+      <div style="width:280px; border-left: 1px solid #e5e7eb; flex-shrink:0;" class="p-6 overflow-y-auto">
+        <h3 class="text-xs font-black uppercase tracking-widest mb-1">Liste d'attente</h3>
+        <p class="text-xs text-gray-400 mb-5">Express — créneaux libres</p>
+        <div id="waitlist" class="space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- MODAL PANIQUE -->
+    <div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)">
+      <div class="modal-box">
+        <p class="text-xs font-black uppercase tracking-widest mb-4">Mode Panique — SMS de secours</p>
+        <div style="border: 1px solid #e5e7eb; background: #fafafa; padding: 16px; font-size: 13px; line-height: 1.7; color: #374151;" id="sms-preview"></div>
+        <div class="flex gap-3 mt-6">
+          <button onclick="validerEnvoi()" class="flex-1 py-2 font-bold text-sm border border-black bg-black text-white cursor-pointer hover:bg-gray-900">Confirmer l'envoi simulé</button>
+          <button onclick="document.getElementById('modal-overlay').classList.remove('open')" class="flex-1 py-2 font-bold text-sm border border-gray-300 cursor-pointer hover:bg-gray-50">Annuler</button>
+        </div>
+      </div>
     </div>
 
     <script>
-      let myChart = null;
+      // ─── STATE ───────────────────────────────────────────────────────────────
+      const notes = JSON.parse(localStorage.getItem('bv_notes') || '{}');
+      let currentPaniqueId = null;
+      let absentCount = 0;
 
-      function formatDate(raw) {
-        if (!raw) return "—";
+      // ─── DONNÉES FICTIVES (remplacées par l'API quand disponible) ───────────
+      const DEMO_APPOINTMENTS = [
+        { id: 1,  prenom: 'Sophie',   telephone: '06 12 34 56 78', email: 'sophie@mail.fr',   prestation: 'Soin visage',     prix: 85,  date_rdv: new Date().toISOString(), statut: 'Confirmé',  relance: 'ok' },
+        { id: 2,  prenom: 'Emma',     telephone: '06 23 45 67 89', email: 'emma@mail.fr',     prestation: 'Épilation',       prix: 40,  date_rdv: new Date().toISOString(), statut: 'En attente', relance: 'fail' },
+        { id: 3,  prenom: 'Camille',  telephone: '06 34 56 78 90', email: 'camille@mail.fr',  prestation: 'Manucure',        prix: 55,  date_rdv: new Date().toISOString(), statut: 'Confirmé',  relance: 'ok' },
+        { id: 4,  prenom: 'Julie',    telephone: '06 45 67 89 01', email: 'julie@mail.fr',    prestation: 'Massage',         prix: 70,  date_rdv: new Date().toISOString(), statut: 'Confirmé',  relance: 'ok' },
+        { id: 5,  prenom: 'Léa',      telephone: '06 56 78 90 12', email: 'lea@mail.fr',      prestation: 'Maquillage',      prix: 60,  date_rdv: new Date().toISOString(), statut: 'En attente', relance: 'ok' },
+      ];
+
+      const WAITLIST = [
+        { id: 'w1', prenom: 'Inès',    telephone: '06 98 76 54 32', prestation: 'Soin visage' },
+        { id: 'w2', prenom: 'Marie',   telephone: '06 87 65 43 21', prestation: 'Épilation' },
+        { id: 'w3', prenom: 'Nadia',   telephone: '06 76 54 32 10', prestation: 'Manucure' },
+      ];
+
+      // rows managed locally
+      let localRows = {};  // id → { statut: 'attente'|'venu'|'absent', relanceSent: bool }
+
+      // ─── HELPERS ─────────────────────────────────────────────────────────────
+      function saveNotes() { localStorage.setItem('bv_notes', JSON.stringify(notes)); }
+
+      function formatHeure(raw) {
+        if (!raw) return '—';
         const d = new Date(raw);
-        return d.toLocaleString("fr-FR", {
-          timeZone: "Europe/Paris",
-          day: "2-digit",
-          month: "2-digit",
-          year: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+        return d.toLocaleString('fr-FR', { hour: '2-digit', minute: '2-digit' });
       }
 
-      async function updateDashboard() {
-        try {
-          const res = await fetch("/api/dashboard-analytics");
-          if (!res.ok) return;
-          const data = await res.json();
+      function setNav(el) {
+        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+      }
 
-          document.getElementById("kpi-calls").innerText = data.totalCalls;
-          document.getElementById("kpi-rdv").innerText = data.totalRdv;
-          document.getElementById("kpi-conv").innerText =
-            data.conversionRate + "%";
-          document.getElementById("kpi-revenue").innerText = data.revenue + "€";
-          document.getElementById("total-badge").innerText =
-            data.appointments.length + " entrées";
+      // ─── RENDER TABLE ─────────────────────────────────────────────────────────
+      function renderTable(appointments) {
+        const tbody = document.getElementById('leads-table');
+        if (!appointments || appointments.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center py-12 text-gray-400 text-sm">En attente de données…</td></tr>';
+          return;
+        }
+        document.getElementById('total-badge').innerText = appointments.length + ' entrées';
 
-          const tbody = document.getElementById("leads-table");
-          if (data.appointments.length === 0) {
-            tbody.innerHTML =
-              '<tr><td colspan="6" class="py-12 text-center text-slate-600 text-sm">En attente de données…</td></tr>';
+        tbody.innerHTML = appointments.map(a => {
+          const s = localRows[a.id] || { statut: 'attente', relanceSent: false };
+          const rowClass = s.statut === 'venu' ? 'row-venu' : s.statut === 'absent' ? 'row-absent' : '';
+          const btnAttente = `<button class="btn-raw${s.statut==='attente'?' active-venu':''}" onclick="setStatut(${a.id},'attente')">Attente</button>`;
+          const btnVenu    = `<button class="btn-raw${s.statut==='venu'?' active-venu':''}" onclick="setStatut(${a.id},'venu')">Venu</button>`;
+          const btnAbsent  = `<button class="btn-raw${s.statut==='absent'?' active-absent':''}" onclick="setStatut(${a.id},'absent')">Absent</button>`;
+          const btnPanique = s.statut === 'absent'
+            ? `<button class="btn-panique" onclick="openPanique(${a.id},'${a.prenom}')">⚡ Mode Panique</button>`
+            : '';
+
+          const noteVal = notes[a.id] || '';
+          const noteField = `<input class="note-input" id="note-${a.id}" placeholder="Note flash…" value="${noteVal.replace(/"/g,'&quot;')}" onchange="saveNote(${a.id},this.value)"/>`;
+
+          let relanceHtml;
+          if (s.relanceSent) {
+            relanceHtml = '<span class="relance-sent">SMS envoyé</span>';
+          } else if (a.relance === 'fail') {
+            relanceHtml = `<span class="relance-fail">Échec d'envoi</span><button class="btn-relancer" onclick="relancerManuellement(${a.id},this)">Relancer manuellement</button>`;
           } else {
-            tbody.innerHTML = data.appointments
-              .map(
-                (a) => `
-          <tr>
-            <td class="py-3.5 pr-4 text-xs text-slate-500 mono">${formatDate(a.date_rdv)}</td>
-            <td class="py-3.5 pr-4 font-semibold text-white text-sm">${a.prenom}</td>
-            <td class="py-3.5 pr-4 text-xs text-slate-400">
-              <div>📞 ${a.telephone}</div>
-              <div class="mt-0.5">✉️ ${a.email || "—"}</div>
+            relanceHtml = '<span class="relance-ok">SMS envoyé ✓</span>';
+          }
+
+          return `<tr class="${rowClass}" id="row-${a.id}" data-prestation="${a.prestation}" data-prix="${a.prix}" data-prenom="${a.prenom}" data-tel="${a.telephone}">
+            <td class="text-gray-500 text-xs">${formatHeure(a.date_rdv)}</td>
+            <td>
+              <span class="cursor-pointer font-semibold hover:underline" onclick="toggleNote(${a.id})">${a.prenom}</span>
+              <button class="btn-raw ml-2" style="font-size:10px;padding:1px 5px;" onclick="window.open('https://web.whatsapp.com/','_blank')">WhatsApp</button>
+              <div id="note-wrap-${a.id}" style="display:${noteVal?'block':'none'}">${noteField}</div>
             </td>
-            <td class="py-3.5 pr-4"><span class="badge-prestation">${a.prestation}</span></td>
-            <td class="py-3.5 pr-4 text-amber-400 font-bold mono text-sm">${a.prix}€</td>
-            <td class="py-3.5"><span class="${a.statut === "Confirmé" ? "badge-ok" : "badge-statut"}">${a.statut}</span></td>
-          </tr>
-        `,
-              )
-              .join("");
-          }
+            <td class="text-gray-700">${a.prestation}</td>
+            <td class="font-bold">${a.prix}€</td>
+            <td>
+              <div class="flex flex-wrap gap-1 items-center">
+                ${btnAttente}${btnVenu}${btnAbsent}
+              </div>
+              ${btnPanique}
+            </td>
+            <td>${relanceHtml}</td>
+            <td id="action-cell-${a.id}"></td>
+          </tr>`;
+        }).join('');
 
-          const labels = data.statsPrestation.map((s) => s.prestation);
-          const values = data.statsPrestation.map((s) => parseInt(s.total));
-          const emptyChart = document.getElementById("empty-chart");
+        updateAbsentCount();
+        renderWaitlist();
+      }
 
-          if (labels.length === 0) {
-            emptyChart.style.display = "block";
-            if (myChart) {
-              myChart.destroy();
-              myChart = null;
-            }
-            return;
-          }
-          emptyChart.style.display = "none";
+      // ─── STATUT ───────────────────────────────────────────────────────────────
+      function setStatut(id, statut) {
+        if (!localRows[id]) localRows[id] = { statut: 'attente', relanceSent: false };
+        localRows[id].statut = statut;
+        rebuildRow(id);
+        updateAbsentCount();
+        renderWaitlist();
+        updateTaux();
+      }
 
-          const palette = [
-            "#10b981",
-            "#6366f1",
-            "#f59e0b",
-            "#f472b6",
-            "#60a5fa",
-            "#a78bfa",
-            "#34d399",
-          ];
-          if (myChart) {
-            myChart.data.labels = labels;
-            myChart.data.datasets[0].data = values;
-            myChart.update();
-          } else {
-            const ctx = document
-              .getElementById("chartPrestations")
-              .getContext("2d");
-            myChart = new Chart(ctx, {
-              type: "doughnut",
-              data: {
-                labels,
-                datasets: [
-                  {
-                    data: values,
-                    backgroundColor: palette,
-                    borderWidth: 2,
-                    borderColor: "#0d1420",
-                  },
-                ],
-              },
-              options: {
-                responsive: true,
-                cutout: "70%",
-                plugins: {
-                  legend: {
-                    position: "bottom",
-                    labels: {
-                      font: { size: 10, family: "Space Grotesk" },
-                      color: "#475569",
-                      padding: 10,
-                      boxWidth: 10,
-                    },
-                  },
-                },
-              },
-            });
-          }
-        } catch (err) {
-          console.error(err);
+      function rebuildRow(id) {
+        // find appointment data from DOM row
+        const row = document.getElementById('row-' + id);
+        if (!row) return;
+        const prenom     = row.dataset.prenom;
+        const prestation = row.dataset.prestation;
+        const prix       = row.dataset.prix;
+        const tel        = row.dataset.tel;
+
+        const s = localRows[id] || { statut: 'attente', relanceSent: false };
+        row.className = s.statut === 'venu' ? 'row-venu' : s.statut === 'absent' ? 'row-absent' : '';
+
+        const statusCell = row.children[4];
+        const btnAttente = `<button class="btn-raw${s.statut==='attente'?' active-venu':''}" onclick="setStatut(${id},'attente')">Attente</button>`;
+        const btnVenu    = `<button class="btn-raw${s.statut==='venu'?' active-venu':''}" onclick="setStatut(${id},'venu')">Venu</button>`;
+        const btnAbsent  = `<button class="btn-raw${s.statut==='absent'?' active-absent':''}" onclick="setStatut(${id},'absent')">Absent</button>`;
+        const btnPanique = s.statut === 'absent'
+          ? `<button class="btn-panique" onclick="openPanique(${id},'${prenom}')">⚡ Mode Panique</button>`
+          : '';
+        statusCell.innerHTML = `<div class="flex flex-wrap gap-1 items-center">${btnAttente}${btnVenu}${btnAbsent}</div>${btnPanique}`;
+      }
+
+      // ─── NOTE FLASH ──────────────────────────────────────────────────────────
+      function toggleNote(id) {
+        const wrap = document.getElementById('note-wrap-' + id);
+        if (!wrap) return;
+        const visible = wrap.style.display !== 'none';
+        wrap.style.display = visible ? 'none' : 'block';
+        if (!visible) {
+          const inp = document.getElementById('note-' + id);
+          if (inp) inp.focus();
         }
       }
 
-      setInterval(updateDashboard, 3000);
+      function saveNote(id, val) {
+        notes[id] = val;
+        saveNotes();
+      }
+
+      // ─── MODAL PANIQUE ───────────────────────────────────────────────────────
+      function openPanique(id, prenom) {
+        currentPaniqueId = id;
+        document.getElementById('sms-preview').innerHTML =
+          `Bonjour <strong>${prenom}</strong>, nous avons constaté votre absence à votre rendez-vous d'aujourd'hui.<br><br>` +
+          `Nous comprenons que des imprévus arrivent. Reprenez rendez-vous dès maintenant à l'heure qui vous convient :<br><br>` +
+          `<strong>https://calendly.com/bounabatilias2004/reservation-institut-de-beaute</strong><br><br>` +
+          `À très bientôt,<br>L'équipe BeautyVoice`;
+        document.getElementById('modal-overlay').classList.add('open');
+      }
+
+      function closeModal(e) {
+        if (e.target === document.getElementById('modal-overlay'))
+          document.getElementById('modal-overlay').classList.remove('open');
+      }
+
+      function validerEnvoi() {
+        document.getElementById('modal-overlay').classList.remove('open');
+        if (currentPaniqueId !== null) {
+          if (!localRows[currentPaniqueId]) localRows[currentPaniqueId] = {};
+          localRows[currentPaniqueId].relanceSent = true;
+          // update relance cell
+          const row = document.getElementById('row-' + currentPaniqueId);
+          if (row) row.children[5].innerHTML = '<span class="relance-sent">SMS envoyé</span>';
+        }
+      }
+
+      // ─── RELANCE MANUELLE ─────────────────────────────────────────────────────
+      function relancerManuellement(id, btn) {
+        btn.disabled = true;
+        btn.innerText = '…';
+        setTimeout(() => {
+          if (!localRows[id]) localRows[id] = {};
+          localRows[id].relanceSent = true;
+          const row = document.getElementById('row-' + id);
+          if (row) row.children[5].innerHTML = '<span class="relance-ok">SMS renvoyé ✓</span>';
+        }, 800);
+      }
+
+      // ─── LISTE D'ATTENTE ─────────────────────────────────────────────────────
+      function updateAbsentCount() {
+        absentCount = Object.values(localRows).filter(r => r.statut === 'absent').length;
+      }
+
+      function renderWaitlist() {
+        const container = document.getElementById('waitlist');
+        container.innerHTML = WAITLIST.map(w => {
+          const canFill = absentCount > 0;
+          return `<div style="border:1px solid #e5e7eb; padding:12px;" id="witem-${w.id}">
+            <p class="font-bold text-sm">${w.prenom}</p>
+            <p class="text-xs text-gray-500 mt-0.5">${w.prestation}</p>
+            <p class="text-xs text-gray-400">${w.telephone}</p>
+            <button class="btn-combler${canFill?' visible':''}" onclick="comblerCreneau('${w.id}')">Combler le créneau</button>
+          </div>`;
+        }).join('');
+      }
+
+      function comblerCreneau(waitId) {
+        // find first absent row
+        const absentId = Object.keys(localRows).find(id => localRows[id].statut === 'absent');
+        if (!absentId) return;
+
+        const waitClient = WAITLIST.find(w => w.id === waitId);
+        if (!waitClient) return;
+
+        const row = document.getElementById('row-' + absentId);
+        if (!row) return;
+
+        // update row data
+        row.dataset.prenom = waitClient.prenom;
+        row.dataset.prestation = waitClient.prestation;
+        row.dataset.tel = waitClient.telephone;
+
+        // update name cell
+        row.children[1].querySelector('span').innerText = waitClient.prenom;
+        row.children[2].innerText = waitClient.prestation;
+
+        // reset statut
+        localRows[absentId].statut = 'venu';
+        rebuildRow(parseInt(absentId));
+
+        // remove from waitlist visually
+        const witem = document.getElementById('witem-' + waitId);
+        if (witem) {
+          witem.style.opacity = '0.35';
+          witem.style.pointerEvents = 'none';
+          witem.querySelector('.btn-combler').style.display = 'none';
+        }
+
+        updateAbsentCount();
+        renderWaitlist();
+        updateTaux();
+      }
+
+      // ─── TAUX ─────────────────────────────────────────────────────────────────
+      function updateTaux() {
+        const total = Object.keys(localRows).length || DEMO_APPOINTMENTS.length;
+        const venus = Object.values(localRows).filter(r => r.statut === 'venu').length;
+        if (total === 0) return;
+        const taux = Math.round((venus / total) * 100);
+        document.getElementById('taux-presence').innerText = taux + '%';
+      }
+
+      // ─── API POLLING ──────────────────────────────────────────────────────────
+      async function updateDashboard() {
+        try {
+          const res = await fetch('/api/dashboard-analytics');
+          if (!res.ok) throw new Error('no api');
+          const data = await res.json();
+
+          document.getElementById('kpi-calls').innerText   = data.totalCalls   ?? '—';
+          document.getElementById('kpi-rdv').innerText     = data.totalRdv     ?? '—';
+          document.getElementById('kpi-conv').innerText    = (data.conversionRate ?? '—') + '%';
+          document.getElementById('kpi-revenue').innerText = (data.revenue       ?? '—') + '€';
+
+          if (data.appointments && data.appointments.length > 0) {
+            renderTable(data.appointments);
+            return;
+          }
+        } catch (_) {
+          // API unavailable — use demo data silently
+        }
+        // fallback
+        renderTable(DEMO_APPOINTMENTS);
+      }
+
+      // ─── INIT ─────────────────────────────────────────────────────────────────
+      renderTable(DEMO_APPOINTMENTS);
+      renderWaitlist();
       updateDashboard();
+      setInterval(updateDashboard, 5000);
     </script>
   </body>
 </html>

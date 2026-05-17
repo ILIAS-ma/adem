@@ -3,6 +3,8 @@ const path = require('path');
 const { Pool } = require('pg');
 const services = require('./services.json');
 
+const CALENDLY_URL = 'https://calendly.com/bounabatilias2004/reservation-institut-de-beaute';
+
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -86,6 +88,20 @@ app.get('/api/dashboard-analytics', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+app.post('/api/send-relance-sms', (req, res) => {
+  const { prenom, telephone } = req.body;
+  if (!prenom || !telephone) {
+    return res.status(400).json({ error: 'prenom et telephone requis' });
+  }
+  const message =
+    `Bonjour ${prenom}, nous avons constaté votre absence à votre rendez-vous d'aujourd'hui. ` +
+    `Nous comprenons que des imprévus arrivent. Reprenez rendez-vous dès maintenant : ${CALENDLY_URL}`;
+
+  // Branchement futur vers un provider SMS (Twilio, OVH SMS, Sendinblue…)
+  console.log(`[SMS simulé] → ${telephone} : ${message}`);
+  res.json({ success: true, message });
 });
 
 const PORT = process.env.PORT || 10000;
