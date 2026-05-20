@@ -256,6 +256,25 @@
     </div>
   </div>
 
+  <!-- CA ANNUEL -->
+  <div class="grid-3" style="margin-bottom:16px;">
+    <div class="card" style="border-left:3px solid var(--border);">
+      <div class="card-title">CA actuel / an</div>
+      <div class="result-num" id="r-ca-actuel-an">—</div>
+      <div class="result-label">projection annuelle</div>
+    </div>
+    <div class="card" style="border-left:3px solid #fca5a5;">
+      <div class="card-title">CA pessimiste / an</div>
+      <div class="result-num red" id="r-ca-pess-an">—</div>
+      <div class="result-delta red" id="r-pess-an-delta"></div>
+    </div>
+    <div class="card card-dark" style="border-left:3px solid #4ade80;">
+      <div class="card-title">CA avec Nathan / an</div>
+      <div class="result-num" style="color:#4ade80;" id="r-ca-nathan-an">—</div>
+      <div class="result-delta" style="color:#86efac;" id="r-nathan-an-delta"></div>
+    </div>
+  </div>
+
   <!-- SECTION 3 — ROI HERO + DÉTAIL -->
   <div class="grid" style="align-items: start;">
     <div class="card card-dark roi-hero">
@@ -402,6 +421,13 @@ function calc(){
   document.getElementById('r-ca-nathan').textContent  = fmt(caNathan) + '€';
   document.getElementById('r-pess-delta').textContent = '− ' + fmt(caActuel - caPess) + '€ vs. actuel';
   document.getElementById('r-nathan-delta').textContent = '+ ' + fmt(caNathan - caActuel) + '€ vs. actuel';
+
+  // Annuel
+  document.getElementById('r-ca-actuel-an').textContent   = fmt(caActuel * 12) + '€';
+  document.getElementById('r-ca-pess-an').textContent     = fmt(caPess * 12) + '€';
+  document.getElementById('r-ca-nathan-an').textContent   = fmt(caNathan * 12) + '€';
+  document.getElementById('r-pess-an-delta').textContent  = '− ' + fmt((caActuel - caPess) * 12) + '€ vs. actuel / an';
+  document.getElementById('r-nathan-an-delta').textContent= '+ ' + fmt((caNathan - caActuel) * 12) + '€ vs. actuel / an';
   document.getElementById('r-roi').textContent        = roi + '×';
   document.getElementById('r-payback').textContent    = payback
     ? 'Rentabilisé en ' + payback + ' jour' + (payback > 1 ? 's' : '') + '. Après, c\'est du pur profit.'
