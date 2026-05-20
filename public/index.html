@@ -278,7 +278,7 @@
     <div class="topbar-right">
       <span style="font-size:11px;color:var(--text-3);">Présence : <span id="taux-presence" style="font-weight:600;color:var(--text);">—</span></span>
       <div class="live-tag"><div class="dot"></div> En direct</div>
-      <a href="https://calendly.com/bounabatilias2004/reservation-institut-de-beaute" target="_blank" class="btn btn-dark btn-sm">Réserver</a>
+      <a href="https://calendly.com/reservation-institut-de-beaute" target="_blank" class="btn btn-dark btn-sm">Réserver</a>
     </div>
   </header>
 
@@ -390,94 +390,66 @@
 
     <!-- ─── MESSAGES ─── -->
     <div class="tab-panel" id="tab-messages">
-      <div class="sec-hdr">
+
+      <div style="display:grid;grid-template-columns:1fr 380px;gap:16px;align-items:flex-start;">
+
+        <!-- COLONNE GAUCHE : liste clients -->
         <div>
-          <div class="sec-title">Messages</div>
-          <div class="sec-sub">Envoi groupé avec personnalisation par client</div>
+          <div class="sec-hdr" style="margin-bottom:10px;">
+            <div class="sec-title">Destinataires</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button class="btn btn-sm btn-dark" onclick="msgSelectAll(true)">Tout sélectionner</button>
+              <button class="btn btn-sm" onclick="msgSelectAll(false)">Tout désélectionner</button>
+              <span id="msg-recip-count" style="font-size:11px;color:var(--text-3);margin-left:4px;"></span>
+            </div>
+          </div>
+          <div class="surface" style="overflow:hidden;">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th style="width:36px;"><input type="checkbox" id="msg-check-all" onchange="msgToggleAll(this)"></th>
+                  <th>Nom</th><th>Téléphone</th><th>Service</th><th>Statut</th>
+                </tr>
+              </thead>
+              <tbody id="msg-clients-table"></tbody>
+            </table>
+          </div>
         </div>
-        <button class="btn btn-sm btn-dark" onclick="newTemplate()">Nouveau template</button>
-      </div>
 
-      <div class="msg-layout">
-        <!-- Templates -->
-        <div>
-          <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px;">Templates</div>
-          <div id="tmpl-list"></div>
-          <button class="btn btn-sm btn-block btn-ghost" style="margin-top:4px;" onclick="newTemplate()">Créer un template</button>
-        </div>
+        <!-- COLONNE DROITE : message + envoi -->
+        <div style="display:flex;flex-direction:column;gap:12px;position:sticky;top:72px;">
 
-        <!-- Composer -->
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <div class="surface" style="padding:20px;">
-            <div style="font-size:13px;font-weight:600;margin-bottom:16px;">Composer</div>
+          <!-- Templates rapides -->
+          <div class="surface" style="padding:16px;">
+            <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px;">Templates rapides</div>
+            <div id="tmpl-list" style="display:flex;flex-direction:column;gap:5px;"></div>
+            <button class="btn btn-sm btn-block btn-ghost" style="margin-top:6px;" onclick="newTemplate()">+ Créer un template</button>
+          </div>
 
+          <!-- Message -->
+          <div class="surface" style="padding:16px;">
+            <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px;">Message</div>
+            <textarea id="msg-body" class="inp" style="min-height:110px;margin-bottom:10px;" placeholder="Bonjour {prenom}, …" oninput="updatePreview()"></textarea>
             <div style="margin-bottom:12px;">
-              <label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Nom de la campagne</label>
-              <input id="msg-subject" class="inp" placeholder="Ex : Relance absents semaine 20">
-            </div>
-
-            <div style="margin-bottom:10px;">
-              <label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Message</label>
-              <textarea id="msg-body" class="inp" placeholder="Bonjour {prenom}…" oninput="updatePreview()"></textarea>
-            </div>
-
-            <div style="margin-bottom:14px;">
-              <div style="font-size:10px;font-weight:500;color:var(--text-3);margin-bottom:6px;">Insérer une variable :</div>
+              <div style="font-size:10px;color:var(--text-3);margin-bottom:5px;">Variables :</div>
               <span class="var-chip" onclick="insertVar('{prenom}')">{prenom}</span>
               <span class="var-chip" onclick="insertVar('{service}')">{service}</span>
-              <span class="var-chip" onclick="insertVar('{date}')">{date}</span>
               <span class="var-chip" onclick="insertVar('{promo}')">{promo}</span>
               <span class="var-chip" onclick="insertVar('{lien}')">{lien}</span>
             </div>
-
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:16px;">
-              <div style="font-size:10px;font-weight:500;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Aperçu — Thomas, Dos complet</div>
-              <div id="msg-preview" style="font-size:12px;line-height:1.7;color:var(--text-2);">Rédigez un message pour voir l'aperçu.</div>
-            </div>
-
-            <div style="margin-bottom:14px;">
-              <div style="font-size:11px;font-weight:600;margin-bottom:8px;">Destinataires</div>
-              <label class="recip-opt sel" id="ro-all">
-                <input type="radio" name="recip" value="all" checked onchange="updateRecip(this)">
-                <div>
-                  <div style="font-size:12px;font-weight:500;">Tous les clients</div>
-                  <div style="font-size:10px;color:var(--text-3);" id="count-all">—</div>
-                </div>
-              </label>
-              <label class="recip-opt" id="ro-rappel">
-                <input type="radio" name="recip" value="rappel" onchange="updateRecip(this)">
-                <div>
-                  <div style="font-size:12px;font-weight:500;">A rappeler</div>
-                  <div style="font-size:10px;color:var(--text-3);" id="count-rappel">—</div>
-                </div>
-              </label>
-              <label class="recip-opt" id="ro-chaud">
-                <input type="radio" name="recip" value="chaud" onchange="updateRecip(this)">
-                <div>
-                  <div style="font-size:12px;font-weight:500;">Prospects chauds</div>
-                  <div style="font-size:10px;color:var(--text-3);" id="count-chaud">—</div>
-                </div>
-              </label>
-              <label class="recip-opt" id="ro-sel">
-                <input type="radio" name="recip" value="selection" onchange="updateRecip(this)">
-                <div>
-                  <div style="font-size:12px;font-weight:500;">Sélection manuelle</div>
-                  <div style="font-size:10px;color:var(--text-3);" id="count-sel">Cochez des clients dans l'onglet Clients</div>
-                </div>
-              </label>
-            </div>
-
-            <button class="btn btn-dark btn-lg btn-block" onclick="sendMessage()">Envoyer</button>
+            <!-- Aperçu -->
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:14px;font-size:12px;line-height:1.7;color:var(--text-2);" id="msg-preview">Rédigez un message…</div>
+            <!-- Bouton envoyer -->
+            <button class="btn btn-dark btn-lg btn-block" onclick="sendMessage()" id="btn-send-msg">Envoyer</button>
           </div>
 
-          <!-- Historique -->
-          <div class="surface" style="padding:18px;">
-            <div style="font-size:13px;font-weight:600;margin-bottom:14px;">Historique des envois</div>
-            <div id="msg-history">
-              <div style="text-align:center;padding:20px;font-size:12px;color:var(--text-3);">Aucun envoi pour le moment.</div>
-            </div>
+          <!-- Historique compact -->
+          <div class="surface" style="padding:16px;">
+            <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px;">Derniers envois</div>
+            <div id="msg-history"></div>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -814,7 +786,7 @@ function setTab(el){
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('topbar-title').textContent=TAB_TITLES[tab]||tab;
   if(tab==='clients')      { renderClients(); updateRecipCounts(); }
-  if(tab==='messages')     { renderMsgTemplates(); updatePreview(); renderMsgHistory(); updateRecipCounts(); }
+  if(tab==='messages')     { renderMsgTemplates(); renderMsgClientsList(); updatePreview(); renderMsgHistory(); }
   if(tab==='relances')     { renderRelTemplates(); renderRelancesTable(); }
   if(tab==='statistiques') renderStats();
   if(tab==='fiches')       renderFiches();
@@ -986,6 +958,44 @@ function prefillMsg(prenom,service){
   setTimeout(()=>{document.getElementById('msg-body').value=`Bonjour ${prenom}, nous avons une offre speciale sur ${service}. Reservez maintenant : ${CALENDLY}`;updatePreview();},80);
 }
 
+// ─────────────── LISTE CLIENTS DANS MESSAGES ───────────────
+function renderMsgClientsList(){
+  const tbody = document.getElementById('msg-clients-table');
+  if(!tbody) return;
+  tbody.innerHTML = CLIENTS.map(c => `
+    <tr id="msgrow-${c.id}" onclick="toggleMsgClient(${c.id})" style="cursor:pointer;">
+      <td onclick="event.stopPropagation()"><input type="checkbox" id="msgchk-${c.id}" ${c.msgChecked?'checked':''} onchange="toggleMsgClient(${c.id})"></td>
+      <td style="font-weight:500;">${c.prenom} ${c.nom}</td>
+      <td style="font-size:11px;color:var(--text-3);">${c.tel}</td>
+      <td style="font-size:11px;color:var(--text-2);">${c.service||'—'}</td>
+      <td>${statusTag(c.statut)}</td>
+    </tr>`).join('');
+  updateMsgCount();
+}
+function toggleMsgClient(id){
+  const c=CLIENTS.find(x=>x.id===id); if(!c)return;
+  c.msgChecked=!c.msgChecked;
+  const chk=document.getElementById('msgchk-'+id);
+  if(chk)chk.checked=c.msgChecked;
+  const row=document.getElementById('msgrow-'+id);
+  if(row)row.style.background=c.msgChecked?'#f0f0f0':'';
+  updateMsgCount();
+}
+function msgSelectAll(val){
+  CLIENTS.forEach(c=>c.msgChecked=val);
+  renderMsgClientsList();
+  document.getElementById('msg-check-all').checked=val;
+}
+function msgToggleAll(el){ msgSelectAll(el.checked); }
+function updateMsgCount(){
+  const n=CLIENTS.filter(c=>c.msgChecked).length;
+  const total=CLIENTS.length;
+  const el=document.getElementById('msg-recip-count');
+  if(el) el.textContent = n===0 ? 'Aucun sélectionné' : n===total ? 'Tous sélectionnés ('+n+')' : n+' / '+total+' sélectionnés';
+  const btn=document.getElementById('btn-send-msg');
+  if(btn) btn.textContent = n>0 ? 'Envoyer à '+n+' client'+(n>1?'s':'') : 'Envoyer';
+}
+
 // ─────────────── TEMPLATES ───────────────
 function renderMsgTemplates(){
   const c=document.getElementById('tmpl-list');
@@ -1038,30 +1048,19 @@ function updatePreview(){
   const text=document.getElementById('msg-body').value;
   document.getElementById('msg-preview').textContent=text?applyVars(text,'Thomas','Barbe'):'Rédigez un message pour voir l\'aperçu.';
 }
-function updateRecipCounts(){
-  document.getElementById('count-all').textContent=CLIENTS.length+' contacts';
-  document.getElementById('count-rappel').textContent=CLIENTS.filter(p=>p.statut==='A rappeler').length+' contacts';
-  document.getElementById('count-chaud').textContent=CLIENTS.filter(p=>p.statut==='Prospect chaud').length+' contacts';
-  document.getElementById('count-sel').textContent=CLIENTS.filter(p=>p.checked).length+' cochés dans Clients';
-}
-function updateRecip(el){
-  document.querySelectorAll('.recip-opt').forEach(r=>r.classList.remove('sel'));
-  el.closest('.recip-opt').classList.add('sel');
-}
+function updateRecipCounts(){}
+function updateRecip(){}
 function sendMessage(){
   const text=document.getElementById('msg-body').value.trim();
-  if(!text){toast('Rédigez un message.');return;}
-  const subject=document.getElementById('msg-subject').value.trim()||'Campagne';
-  const recip=document.querySelector('input[name=recip]:checked')?.value||'all';
-  let list;
-  if(recip==='all')list=CLIENTS;
-  else if(recip==='rappel')list=CLIENTS.filter(p=>p.statut==='A rappeler');
-  else if(recip==='chaud')list=CLIENTS.filter(p=>p.statut==='Prospect chaud');
-  else list=CLIENTS.filter(p=>p.checked);
-  if(!list.length){toast('Aucun destinataire.');return;}
-  addHist(subject,'Envoi groupé — '+list.length+' contacts',list.length);
-  document.getElementById('msg-body').value='';document.getElementById('msg-subject').value='';
-  updatePreview();renderMsgHistory();toast(list.length+' SMS envoyés.');
+  if(!text){toast('Rédigez un message d\'abord.');return;}
+  const list=CLIENTS.filter(c=>c.msgChecked);
+  if(!list.length){toast('Sélectionnez au moins un client.');return;}
+  addHist('Campagne','Envoi groupé — '+list.length+' contact'+(list.length>1?'s':''),list.length);
+  document.getElementById('msg-body').value='';
+  updatePreview();renderMsgHistory();
+  CLIENTS.forEach(c=>c.msgChecked=false);
+  renderMsgClientsList();
+  toast(list.length+' SMS envoyé'+(list.length>1?'s':'')+'.');
 }
 function addHist(subject,detail,count){
   MSG_HISTORY.unshift({subject,detail,count,date:new Date().toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});
