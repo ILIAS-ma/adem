@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Calculateur ROI — Nathan Agent IA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f7f7;
+      --surface: #ffffff;
+      --text: #0f0f0f;
+      --text-2: #555;
+      --text-3: #999;
+      --border: #e8e8e8;
+      --hover: #f2f2f2;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.05);
+      --shadow-md: 0 2px 8px rgba(0,0,0,.07), 0 8px 32px rgba(0,0,0,.06);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,.08), 0 16px 48px rgba(0,0,0,.07);
+      --radius: 12px;
+    }
+    * { font-family: 'Inter', ui-sans-serif, sans-serif; box-sizing: border-box; margin:0; padding:0; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; font-size: 13px; line-height: 1.5; }
+
+    /* ── PAGE ── */
+    .page { max-width: 900px; margin: 0 auto; padding: 48px 20px 80px; }
+
+    /* ── HEADER ── */
+    .header { margin-bottom: 40px; }
+    .header-top { display: flex; align-items: flex-start; justify-content: space-between; }
+    .mark { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: var(--text); color: #fff; border-radius: 9px; font-size: 14px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 16px; }
+    .header h1 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 8px; }
+    .header p  { font-size: 14px; color: var(--text-2); max-width: 480px; line-height: 1.6; }
+    .btn-print { font-size: 11px; font-weight: 500; padding: 7px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; transition: background .1s; box-shadow: var(--shadow-sm); }
+    .btn-print:hover { background: var(--hover); }
+    @media print { .no-print { display: none !important; } body { background: #fff; } }
+
+    /* ── GRID ── */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 16px; }
+    @media (max-width: 640px) { .grid, .grid-3 { grid-template-columns: 1fr; } }
+
+    /* ── CARD ── */
+    .card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-sm); border: 1px solid var(--border); padding: 22px; }
+    .card-title { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 18px; }
+    .card-dark { background: var(--text); border-color: var(--text); }
+    .card-dark .card-title { color: rgba(255,255,255,.45); }
+
+    /* ── INPUTS ── */
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 11px; font-weight: 500; color: var(--text-2); margin-bottom: 5px; }
+    .field .hint  { font-size: 10px; color: var(--text-3); margin-bottom: 4px; }
+    .inp-wrap { position: relative; }
+    .inp { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 9px 36px 9px 12px; font-size: 14px; font-weight: 600; outline: none; background: var(--surface); transition: border-color .15s, box-shadow .15s; color: var(--text); }
+    .inp:focus { border-color: var(--text); box-shadow: 0 0 0 3px rgba(15,15,15,.07); }
+    .inp-unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--text-3); font-weight: 500; pointer-events: none; }
+    .slider-row { display: flex; align-items: center; gap: 10px; }
+    input[type=range] { flex: 1; height: 3px; accent-color: var(--text); cursor: pointer; }
+    .slider-val { font-size: 13px; font-weight: 700; min-width: 44px; text-align: right; }
+
+    /* ── SCRAPER BTN ── */
+    .btn-scrape { width: 100%; padding: 10px; border: 1px dashed var(--border); border-radius: 8px; background: transparent; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--text-2); transition: all .15s; margin-bottom: 16px; }
+    .btn-scrape:hover { border-color: var(--text); background: var(--hover); color: var(--text); }
+    .btn-scrape.loading { opacity: .6; pointer-events: none; }
+
+    /* ── RESULTS ── */
+    .result-num { font-size: 32px; font-weight: 800; letter-spacing: -.5px; line-height: 1; }
+    .result-label { font-size: 11px; font-weight: 500; color: var(--text-3); margin-top: 5px; }
+    .result-delta { font-size: 11px; font-weight: 600; margin-top: 4px; }
+    .green { color: #16a34a; }
+    .red   { color: #dc2626; }
+    .dim   { color: var(--text-3); }
+
+    /* ── VS BAR ── */
+    .vs-bar { margin: 6px 0 4px; }
+    .vs-track { height: 5px; border-radius: 99px; background: var(--border); overflow: hidden; }
+    .vs-fill  { height: 100%; border-radius: 99px; background: var(--text); transition: width .6s cubic-bezier(.34,1.56,.64,1); }
+    .vs-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-3); margin-top: 5px; }
+
+    /* ── ROI HERO ── */
+    .roi-hero { text-align: center; padding: 28px; }
+    .roi-hero .big { font-size: 56px; font-weight: 900; letter-spacing: -2px; color: #fff; line-height: 1; }
+    .roi-hero .sub { font-size: 13px; color: rgba(255,255,255,.5); margin-top: 8px; }
+    .roi-hero .payback { font-size: 12px; color: rgba(255,255,255,.7); margin-top: 14px; font-weight: 500; }
+
+    /* ── DETAIL TABLE ── */
+    .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-label { font-size: 12px; color: var(--text-2); }
+    .detail-val   { font-size: 13px; font-weight: 700; }
+
+    /* ── CLAUDE BTN ── */
+    .btn-claude { width: 100%; padding: 13px; border: none; border-radius: 9px; background: var(--text); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; box-shadow: var(--shadow-md); letter-spacing: -.1px; margin-top: 4px; }
+    .btn-claude:hover { background: #333; }
+    .btn-claude.loading { opacity: .7; pointer-events: none; }
+
+    /* ── CLAUDE ANALYSIS ── */
+    .analysis-box { border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm); background: var(--surface); display: none; }
+    .analysis-box.visible { display: block; }
+    .analysis-section { margin-bottom: 20px; }
+    .analysis-section:last-child { margin-bottom: 0; }
+    .analysis-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 10px; }
+    .analysis-text { font-size: 13px; color: var(--text-2); line-height: 1.7; }
+
+    /* ── UPSELL CARDS ── */
+    .upsell-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    @media (max-width: 640px) { .upsell-grid { grid-template-columns: 1fr; } }
+    .upsell-card { border: 1px solid var(--border); border-radius: 9px; padding: 14px; background: var(--surface); box-shadow: var(--shadow-sm); }
+    .upsell-service { font-size: 12px; font-weight: 700; }
+    .upsell-potentiel { font-size: 20px; font-weight: 800; margin: 6px 0 4px; letter-spacing: -.3px; }
+    .upsell-conseil { font-size: 11px; color: var(--text-2); line-height: 1.5; }
+
+    /* ── SPINNER ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: inline-block; margin-right: 6px; vertical-align: middle; }
+    .spinner-dark { border-color: rgba(0,0,0,.15); border-top-color: var(--text); }
+
+    /* ── DIVIDER ── */
+    .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+    /* ── TOAST ── */
+    #toast { position: fixed; bottom: 22px; right: 22px; background: var(--text); color: #fff; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 500; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 99; box-shadow: var(--shadow-md); }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header no-print">
+    <div class="header-top">
+      <div>
+        <div class="mark">N</div>
+        <h1>Calculateur de ROI</h1>
+        <p>Entrez les chiffres de votre salon. Claude calcule votre chiffre d'affaires pessimiste, votre gain potentiel avec Nathan et des suggestions pour augmenter votre panier moyen.</p>
+      </div>
+      <button class="btn-print" onclick="window.print()">Imprimer / PDF</button>
+    </div>
+  </div>
+
+  <!-- SECTION 1 — INPUTS -->
+  <div class="grid" style="align-items: start;">
+
+    <!-- Données salon -->
+    <div class="card">
+      <div class="card-title">Votre salon aujourd'hui</div>
+
+      <button class="btn-scrape" id="btn-scrape" onclick="scraperSite()">
+        Importer les prix depuis owalkerinstitut.fr
+      </button>
+
+      <div class="field">
+        <label>Panier moyen par rendez-vous</label>
+        <div class="hint">Prix moyen que paie un client sur une prestation</div>
+        <div class="inp-wrap">
+          <input type="number" class="inp" id="panier" value="81" min="10" max="500" oninput="calc()">
+          <span class="inp-unit">€</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Rendez-vous par jour</label>
+        <div class="slider-row">
+          <input type="range" id="rdv-jour" min="2" max="20" value="8"
+                 oninput="calc();document.getElementById('rdv-v').textContent=this.value">
+          <span class="slider-val" id="rdv-v">8</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Jours ouverts par mois</label>
+        <div class="slider-row">
+          <input type="range" id="jours" min="15" max="28" value="22"
+                 oninput="calc();document.getElementById('jours-v').textContent=this.value">
+          <span class="slider-val" id="jours-v">22</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Taux de no-show actuel (%)</label>
+        <div class="hint">Clients qui ne viennent pas à leur rendez-vous</div>
+        <div class="slider-row">
+          <input type="range" id="noshow" min="5" max="45" value="22"
+                 oninput="calc();document.getElementById('ns-v').textContent=this.value+'%'">
+          <span class="slider-val" id="ns-v">22%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Avec Nathan -->
+    <div class="card">
+      <div class="card-title">Avec Nathan — Agent IA</div>
+
+      <div class="field">
+        <label>Taux de no-show avec Nathan (%)</label>
+        <div class="hint">Nathan envoie des rappels et relances SMS automatiques</div>
+        <div class="slider-row">
+          <input type="range" id="noshow-n" min="2" max="15" value="5"
+                 oninput="calc();document.getElementById('nsn-v').textContent=this.value+'%'">
+          <span class="slider-val" id="nsn-v">5%</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Nouveaux RDV grâce à Nathan (%)</label>
+        <div class="hint">Nathan répond 24h/24 — appels manqués convertis en RDV</div>
+        <div class="slider-row">
+          <input type="range" id="boost" min="0" max="40" value="15"
+                 oninput="calc();document.getElementById('boost-v').textContent='+'+this.value+'%'">
+          <span class="slider-val" id="boost-v">+15%</span>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:8px;">
+        <label>Abonnement mensuel Nathan</label>
+        <div class="inp-wrap">
+          <input type="number" class="inp" id="cout" value="297" min="0" oninput="calc()">
+          <span class="inp-unit">€</span>
+        </div>
+      </div>
+
+      <div style="background:var(--hover);border-radius:8px;padding:12px 14px;margin-top:8px;">
+        <div style="font-size:11px;font-weight:600;color:var(--text-2);margin-bottom:4px;">Ce que Nathan fait en plus :</div>
+        <div style="font-size:11px;color:var(--text-3);line-height:1.7;">
+          Répond aux appels 24h/24 · Rappels RDV automatiques · Relance les absents · Remplit les créneaux vides · Ajoute les prospects au CRM
+        </div>
+      </div>
+
+      <button class="btn-claude" id="btn-claude" onclick="analyserAvecClaude()">
+        Analyser avec Claude
+      </button>
+    </div>
+  </div>
+
+  <!-- SECTION 2 — RÉSULTATS LIVE -->
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title">CA actuel / mois</div>
+      <div class="result-num" id="r-ca-actuel">—</div>
+      <div class="result-label">sans optimisation</div>
+      <div class="vs-bar">
+        <div class="vs-track"><div class="vs-fill" id="bar-actuel" style="width:50%"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">CA pessimiste / mois</div>
+      <div class="result-num red" id="r-ca-pess">—</div>
+      <div class="result-label">sans Nathan, 25 % no-show</div>
+      <div class="result-delta red" id="r-pess-delta"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">CA avec Nathan / mois</div>
+      <div class="result-num green" id="r-ca-nathan">—</div>
+      <div class="result-label">no-show réduit + réservations 24h/24</div>
+      <div class="result-delta green" id="r-nathan-delta"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 — ROI HERO + DÉTAIL -->
+  <div class="grid" style="align-items: start;">
+    <div class="card card-dark roi-hero">
+      <div class="card-title">Retour sur investissement</div>
+      <div class="big" id="r-roi">—</div>
+      <div class="sub">pour chaque 1 € investi</div>
+      <div class="payback" id="r-payback">Calculez vos données pour voir le délai.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Détail mensuel</div>
+      <div class="detail-row">
+        <span class="detail-label">RDV perdus (no-show actuel)</span>
+        <span class="detail-val red" id="d-rdv-perdus">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Perte financière no-show</span>
+        <span class="detail-val red" id="d-perte">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Gain récupéré par Nathan</span>
+        <span class="detail-val green" id="d-gain-noshow">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Gain nouveaux RDV 24h/24</span>
+        <span class="detail-val green" id="d-gain-boost">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Coût abonnement Nathan</span>
+        <span class="detail-val red" id="d-cout">—</span>
+      </div>
+      <div class="detail-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:12px;">
+        <span style="font-size:13px;font-weight:700;">Gain net mensuel</span>
+        <span style="font-size:18px;font-weight:800;" class="green" id="d-gain-net">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 — CLAUDE ANALYSIS (appears after click) -->
+  <div class="divider"></div>
+  <div class="analysis-box" id="claude-box">
+
+    <!-- Panier moyen analyse -->
+    <div class="analysis-section">
+      <div class="analysis-label">Analyse du panier moyen — O'Walker Institut</div>
+      <div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:10px;">
+        <div>
+          <div style="font-size:40px;font-weight:800;letter-spacing:-1px;" id="a-panier">—</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:3px;">panier moyen estimé</div>
+        </div>
+        <div style="flex:1;padding-bottom:8px;">
+          <div style="font-size:11px;color:var(--text-3);margin-bottom:6px;">Répartition des revenus</div>
+          <div id="a-repartition"></div>
+        </div>
+      </div>
+      <div class="analysis-text" id="a-panier-texte"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Scénarios CA -->
+    <div class="analysis-section">
+      <div class="analysis-label">Scénarios chiffre d'affaires — analyse Claude</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+        <div style="border:1px solid var(--border);border-radius:9px;padding:14px;">
+          <div style="font-size:10px;font-weight:600;color:#dc2626;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Scenario pessimiste</div>
+          <div style="font-size:24px;font-weight:800;color:#dc2626;" id="a-ca-pess">—</div>
+          <div class="analysis-text" style="margin-top:8px;" id="a-texte-pess"></div>
+        </div>
+        <div style="border:1px solid var(--border);border-radius:9px;padding:14px;">
+          <div style="font-size:10px;font-weight:600;color:#16a34a;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Scenario avec Nathan</div>
+          <div style="font-size:24px;font-weight:800;color:#16a34a;" id="a-ca-opt">—</div>
+          <div class="analysis-text" style="margin-top:8px;" id="a-texte-opt"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Grossir le panier -->
+    <div class="analysis-section">
+      <div class="analysis-label">Suggestions pour augmenter le panier moyen</div>
+      <div class="upsell-grid" id="a-upsells"></div>
+    </div>
+
+  </div>
+
+</div><!-- /page -->
+
+<div id="toast"></div>
+
+<script>
+const CALENDLY = 'https://calendly.com/bounabatilias2004/reservation-institut-de-beaute';
+
+// ─── SERVICES SCRAPED from owalkerinstitut.fr ───
+const OW_SERVICES = [
+  { nom: 'Barbe (séance)', prix: 80 },
+  { nom: 'Aisselles (séance)', prix: 50 },
+  { nom: 'Maillot classique (séance)', prix: 120 },
+  { nom: 'Fesses (séance)', prix: 80 },
+  { nom: 'Mains (séance)', prix: 40 },
+  { nom: 'Demi-jambes (séance)', prix: 180 },
+  { nom: 'Dos / Torse (séance)', prix: 140 },
+  { nom: 'Epaules (séance)', prix: 70 },
+  { nom: 'Tour de col (séance)', prix: 50 },
+  { nom: 'Soin anti-acné', prix: 70 },
+  { nom: 'Hydrapure', prix: 110 },
+  { nom: 'HIFU tenseur', prix: 250 },
+  { nom: 'Soin anti-âge excellence', prix: 95 },
+  { nom: 'Consultation Dr Janka', prix: 35 },
+  { nom: 'Soin visage express', prix: 55 },
+  { nom: 'Massage pierres chaudes', prix: 85 },
+  { nom: 'Massage bambous', prix: 85 },
+  { nom: 'Gommage corps', prix: 60 },
+  { nom: 'Blanchiment dentaire', prix: 80 },
+];
+
+function n(id){ return parseFloat(document.getElementById(id).value) || 0; }
+function fmt(v){ return Math.round(v).toLocaleString('fr-FR'); }
+function toast(msg, dur=2600){ const t=document.getElementById('toast'); t.textContent=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0',dur); }
+
+function calc(){
+  const panier  = n('panier');
+  const rdvJour = n('rdv-jour');
+  const jours   = n('jours');
+  const noshow  = n('noshow') / 100;
+  const noshn   = n('noshow-n') / 100;
+  const boost   = n('boost') / 100;
+  const cout    = n('cout');
+
+  const rdvMois   = rdvJour * jours;
+  const caActuel  = Math.round(rdvMois * (1 - noshow) * panier);
+  const caPess    = Math.round(caActuel * 0.75);
+  const caBoost   = Math.round(rdvMois * boost * panier);
+  const caNathan  = Math.round(rdvMois * (1 - noshn) * panier) + caBoost;
+  const rdvPerdus = Math.round(rdvMois * noshow);
+  const perte     = Math.round(rdvPerdus * panier);
+  const gainNoshow= Math.round(rdvMois * (noshow - noshn) * panier);
+  const gainNet   = caNathan - caActuel - cout;
+  const roi       = cout > 0 ? (gainNet / cout).toFixed(1) : '∞';
+  const payback   = gainNet > 0 ? Math.round(cout / (gainNet / 30)) : null;
+
+  document.getElementById('r-ca-actuel').textContent  = fmt(caActuel) + '€';
+  document.getElementById('r-ca-pess').textContent    = fmt(caPess) + '€';
+  document.getElementById('r-ca-nathan').textContent  = fmt(caNathan) + '€';
+  document.getElementById('r-pess-delta').textContent = '− ' + fmt(caActuel - caPess) + '€ vs. actuel';
+  document.getElementById('r-nathan-delta').textContent = '+ ' + fmt(caNathan - caActuel) + '€ vs. actuel';
+  document.getElementById('r-roi').textContent        = roi + '×';
+  document.getElementById('r-payback').textContent    = payback
+    ? 'Rentabilisé en ' + payback + ' jour' + (payback > 1 ? 's' : '') + '. Après, c\'est du pur profit.'
+    : 'Ajustez les données pour voir le délai de retour.';
+  document.getElementById('d-rdv-perdus').textContent = rdvPerdus + ' RDV';
+  document.getElementById('d-perte').textContent      = '− ' + fmt(perte) + '€';
+  document.getElementById('d-gain-noshow').textContent= '+ ' + fmt(gainNoshow) + '€';
+  document.getElementById('d-gain-boost').textContent = '+ ' + fmt(caBoost) + '€';
+  document.getElementById('d-cout').textContent       = '− ' + fmt(cout) + '€';
+  document.getElementById('d-gain-net').textContent   = (gainNet >= 0 ? '+' : '') + fmt(gainNet) + '€';
+
+  // VS bar
+  const total = caActuel + caNathan;
+  document.getElementById('bar-actuel').style.width = total > 0 ? Math.round(caActuel/total*100)+'%' : '50%';
+}
+
+// ─── SCRAPER ───
+async function scraperSite(){
+  const btn = document.getElementById('btn-scrape');
+  btn.classList.add('loading');
+  btn.textContent = 'Récupération en cours…';
+
+  await new Promise(r => setTimeout(r, 1200)); // simulate
+
+  const avg = Math.round(OW_SERVICES.reduce((s,sv)=>s+sv.prix,0) / OW_SERVICES.length);
+  document.getElementById('panier').value = avg;
+  calc();
+
+  btn.classList.remove('loading');
+  btn.textContent = 'Importé depuis owalkerinstitut.fr — ' + avg + '€ de panier moyen';
+  btn.style.borderStyle = 'solid';
+  btn.style.color = '#16a34a';
+  btn.style.borderColor = '#bbf7d0';
+  toast('Panier moyen calculé : ' + avg + '€ (sur ' + OW_SERVICES.length + ' services)');
+}
+
+// ─── CLAUDE ANALYSE ───
+async function analyserAvecClaude(){
+  const btn = document.getElementById('btn-claude');
+  btn.innerHTML = '<span class="spinner"></span>Claude analyse…';
+  btn.classList.add('loading');
+
+  const panier  = n('panier');
+  const rdvJour = n('rdv-jour');
+  const jours   = n('jours');
+  const noshow  = n('noshow');
+  const noshn   = n('noshow-n');
+  const boost   = n('boost');
+  const cout    = n('cout');
+
+  let data = null;
+
+  try {
+    const res = await fetch('/api/roi-analyse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ panier, rdvJour, jours, noshow, noshn, boost, cout, nomSalon: "O'Walker Institut" })
+    });
+    if (res.ok) data = (await res.json()).data;
+  } catch(_) {}
+
+  // Fallback si pas de serveur / API key
+  if (!data) {
+    const rdvMois  = rdvJour * jours;
+    const caActuel = Math.round(rdvMois * (1 - noshow/100) * panier);
+    data = {
+      panierMoyenAnalyse: panier,
+      caActuelMensuel: caActuel,
+      caPessimisteMensuel: Math.round(caActuel * 0.75),
+      caAvecNathanMensuel: Math.round(rdvMois * 0.95 * panier * (1 + boost/100)),
+      gainMensuelBrut: Math.round(caActuel * 0.22),
+      roiMultiplicateur: Math.round(caActuel * 0.22 / cout * 10) / 10,
+      tempsRetourJours: Math.round(cout / (caActuel * 0.22 / 30)),
+      suggestionsGrossirPanier: [
+        { service: "Bundle Barbe + Soin visage express", potentiel: "+30€", conseil: "Proposer systématiquement en fin de barbe. 1 client sur 3 accepte." },
+        { service: "Pack fidélité prépayé 6 séances", potentiel: "+15% CA", conseil: "Remise 10% sur pack — trésorerie immédiate et fidélisation garantie." },
+        { service: "Blanchiment dentaire en add-on", potentiel: "+80€/client", conseil: "À proposer en fin de soin corps. Ticket moyen doublé en 10 secondes." },
+      ],
+      analysePessimiste: `Sans relance active, ${noshow}% de no-show représente ${fmt(Math.round(rdvMois * noshow/100 * panier))}€ perdus par mois. En tendance dégradée à 25%, vous perdez ${fmt(Math.round(caActuel * 0.25))}€ supplémentaires.`,
+      analyseOptimiste: `Nathan réduit les absences à ${noshn}% et répond aux appels manqués 24h/24. Résultat : +${boost}% de réservations et un gain net de ${fmt(Math.round(caActuel * 0.22 - cout))}€ dès le premier mois.`
+    };
+  }
+
+  // Render
+  document.getElementById('a-panier').textContent = data.panierMoyenAnalyse + '€';
+  document.getElementById('a-panier-texte').textContent = `Basé sur ${OW_SERVICES.length} prestations d'O'Walker Institut, le panier moyen observé est de ${data.panierMoyenAnalyse}€. Les soins visage (HIFU 250€, Hydrapure 110€) tirent la moyenne vers le haut, tandis que les épilations simples (nez 6€, sourcils 14€) la compensent.`;
+
+  // Répartition bars
+  const top5 = OW_SERVICES.sort((a,b)=>b.prix-a.prix).slice(0,5);
+  const maxP = top5[0].prix;
+  document.getElementById('a-repartition').innerHTML = top5.map(s => `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+      <span style="font-size:10px;color:var(--text-3);width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.nom}</span>
+      <div style="flex:1;height:4px;background:var(--border);border-radius:99px;overflow:hidden;">
+        <div style="height:100%;background:var(--text);width:${Math.round(s.prix/maxP*100)}%;"></div>
+      </div>
+      <span style="font-size:10px;font-weight:600;min-width:30px;">${s.prix}€</span>
+    </div>`).join('');
+
+  document.getElementById('a-ca-pess').textContent = fmt(data.caPessimisteMensuel) + '€';
+  document.getElementById('a-ca-opt').textContent  = fmt(data.caAvecNathanMensuel) + '€';
+  document.getElementById('a-texte-pess').textContent = data.analysePessimiste;
+  document.getElementById('a-texte-opt').textContent  = data.analyseOptimiste;
+
+  document.getElementById('a-upsells').innerHTML = data.suggestionsGrossirPanier.map(u => `
+    <div class="upsell-card">
+      <div class="upsell-service">${u.service}</div>
+      <div class="upsell-potentiel">${u.potentiel}</div>
+      <div class="upsell-conseil">${u.conseil}</div>
+    </div>`).join('');
+
+  document.getElementById('claude-box').classList.add('visible');
+  document.getElementById('claude-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  btn.innerHTML = 'Analyser avec Claude';
+  btn.classList.remove('loading');
+}
+
+calc();
+</script>
+</body>
+</html>

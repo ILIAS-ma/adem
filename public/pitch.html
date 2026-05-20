@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Nathan — Présentation RDV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #1a2744;
+      --navy2: #243355;
+      --gold: #c9a840;
+      --gold-light: #fdf8ec;
+      --white: #fff;
+      --bg: #f6f7fa;
+      --border: #e4e9f2;
+      --text: #1a2744;
+      --text-2: #4a5568;
+      --text-3: #8896a9;
+      --red: #dc2626;
+      --green: #16a34a;
+      --shadow: 0 2px 8px rgba(26,39,68,.08), 0 8px 28px rgba(26,39,68,.06);
+    }
+    * { font-family: 'Inter', ui-sans-serif, sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-size: 14px; }
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      background: var(--navy);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; height: 52px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-mark  { width: 28px; height: 28px; background: var(--gold); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: var(--navy); }
+    .nav-name  { font-size: 13px; font-weight: 700; color: #fff; letter-spacing: .04em; }
+    .nav-steps { display: flex; gap: 6px; }
+    .nav-step  { font-size: 11px; font-weight: 500; color: rgba(255,255,255,.4); padding: 5px 12px; border-radius: 99px; cursor: pointer; transition: all .15s; text-decoration: none; }
+    .nav-step:hover, .nav-step.active { background: rgba(255,255,255,.1); color: #fff; }
+    .nav-cta   { font-size: 11px; font-weight: 700; padding: 7px 16px; border-radius: 7px; background: var(--gold); color: var(--navy); text-decoration: none; transition: background .15s; }
+    .nav-cta:hover { background: #b8943a; }
+
+    /* ── SECTIONS ── */
+    section { padding: 80px 0; }
+    .container { max-width: 880px; margin: 0 auto; padding: 0 28px; }
+    .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 4px 12px; border-radius: 99px; margin-bottom: 16px; }
+    .tag-gold { background: var(--gold-light); color: #8a6800; }
+    .tag-red   { background: #fef2f2; color: var(--red); }
+    .tag-green { background: #f0fdf4; color: var(--green); }
+    .tag-navy  { background: rgba(26,39,68,.08); color: var(--navy); }
+    h2 { font-size: 36px; font-weight: 900; letter-spacing: -.6px; line-height: 1.15; margin-bottom: 14px; }
+    .lead { font-size: 16px; color: var(--text-2); line-height: 1.7; max-width: 580px; }
+
+    /* ── HERO ── */
+    .hero { background: var(--navy); padding: 120px 0 80px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(201,168,64,.15), transparent 65%); }
+    .hero .container { position: relative; }
+    .hero h1 { font-size: 52px; font-weight: 900; letter-spacing: -1.5px; line-height: 1.1; color: #fff; margin-bottom: 18px; }
+    .hero h1 em { font-style: normal; color: var(--gold); }
+    .hero .sub { font-size: 18px; color: rgba(255,255,255,.55); max-width: 500px; margin: 0 auto 36px; line-height: 1.6; }
+    .hero-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 12px 24px; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all .15s; }
+    .btn-gold    { background: var(--gold); color: var(--navy); }
+    .btn-gold:hover { background: #b8943a; }
+    .btn-outline { border: 1.5px solid rgba(255,255,255,.2); color: rgba(255,255,255,.75); }
+    .btn-outline:hover { border-color: rgba(255,255,255,.45); color: #fff; }
+    .btn-navy    { background: var(--navy); color: #fff; }
+    .btn-navy:hover { background: var(--navy2); }
+    .btn-dark    { background: var(--text); color: #fff; }
+    .btn-dark:hover { background: #2a2520; }
+
+    /* ── PROBLEM ── */
+    .problems { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 44px; }
+    .problem { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 22px; box-shadow: var(--shadow); border-top: 3px solid var(--red); }
+    .problem-num { font-size: 38px; font-weight: 900; color: var(--red); letter-spacing: -1px; line-height: 1; margin-bottom: 8px; }
+    .problem-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .problem-desc  { font-size: 12px; color: var(--text-2); line-height: 1.6; }
+
+    /* ── SOLUTION ── */
+    .solution-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; }
+    .sol-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 22px; box-shadow: var(--shadow); }
+    .sol-card.highlight { background: var(--navy); border-color: var(--navy); }
+    .sol-card.highlight * { color: rgba(255,255,255,.8) !important; }
+    .sol-card.highlight .sol-title { color: var(--gold) !important; }
+    .sol-num   { font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: .06em; margin-bottom: 8px; }
+    .sol-title { font-size: 14px; font-weight: 700; margin-bottom: 7px; }
+    .sol-desc  { font-size: 12px; color: var(--text-2); line-height: 1.65; }
+
+    /* ── WORKFLOW ── */
+    .wf-block { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; box-shadow: var(--shadow); margin-bottom: 12px; }
+    .wf-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .wf-title  { font-size: 14px; font-weight: 700; }
+    .wf-desc   { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+    .wf-status { font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: #f0fdf4; color: var(--green); }
+    .flow      { display: flex; align-items: center; gap: 0; overflow-x: auto; }
+    .flow-step { flex-shrink: 0; }
+    .fbox      { border: 1.5px solid var(--border); border-radius: 9px; padding: 11px 13px; background: var(--bg); min-width: 120px; }
+    .fbox.trig { border-color: var(--gold); background: var(--gold-light); }
+    .fbox.act  { border-color: var(--navy); background: var(--navy); }
+    .fbox-lbl  { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-3); margin-bottom: 4px; }
+    .fbox.act .fbox-lbl { color: rgba(255,255,255,.4); }
+    .fbox-name { font-size: 12px; font-weight: 600; }
+    .fbox.act .fbox-name { color: #fff; }
+    .fbox-sub  { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+    .fbox.act .fbox-sub { color: rgba(255,255,255,.45); }
+    .arrow     { padding: 0 8px; color: var(--text-3); font-size: 14px; flex-shrink: 0; }
+
+    /* ── NUMBERS ── */
+    .numbers { background: var(--navy); padding: 60px 0; }
+    .numbers-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; }
+    .num-cell { text-align: center; padding: 24px 16px; border-right: 1px solid rgba(255,255,255,.07); }
+    .num-cell:last-child { border-right: none; }
+    .num-val  { font-size: 42px; font-weight: 900; color: var(--gold); letter-spacing: -1px; line-height: 1; }
+    .num-lbl  { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 7px; }
+
+    /* ── ROI ── */
+    .roi-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; }
+    .roi-before { background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 24px; }
+    .roi-after  { background: var(--navy); border-radius: 12px; padding: 24px; }
+    .roi-label  { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; }
+    .roi-before .roi-label { color: var(--red); }
+    .roi-after  .roi-label { color: var(--gold); }
+    .roi-num    { font-size: 44px; font-weight: 900; letter-spacing: -1.5px; line-height: 1; margin-bottom: 12px; }
+    .roi-before .roi-num { color: var(--red); }
+    .roi-after  .roi-num { color: var(--gold); }
+    .roi-list   { list-style: none; }
+    .roi-list li { font-size: 12px; padding: 4px 0; display: flex; gap: 7px; }
+    .roi-before .roi-list li { color: var(--text-2); }
+    .roi-after  .roi-list li  { color: rgba(255,255,255,.65); }
+    .roi-list li::before { font-weight: 700; flex-shrink: 0; }
+    .roi-before .roi-list li::before { content: '—'; color: var(--red); }
+    .roi-after  .roi-list li::before { content: '+'; color: var(--gold); }
+
+    /* ── ROI CALC EMBED ── */
+    .roi-calc-box { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--shadow); margin-top: 20px; }
+    .calc-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin-bottom: 20px; }
+    .cf label  { font-size: 11px; font-weight: 500; color: var(--text-2); display: block; margin-bottom: 5px; }
+    .cf input  { width: 100%; border: 1px solid var(--border); border-radius: 7px; padding: 9px 12px; font-size: 14px; font-weight: 700; outline: none; transition: border-color .15s; }
+    .cf input:focus { border-color: var(--navy); }
+    .calc-results { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+    .cr-cell { text-align: center; padding: 16px; background: var(--bg); border-radius: 9px; }
+    .cr-lbl  { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--text-3); margin-bottom: 6px; }
+    .cr-val  { font-size: 24px; font-weight: 800; }
+    .cr-val.r { color: var(--red); }
+    .cr-val.g { color: var(--green); }
+    .cr-val.n { color: var(--navy); }
+    .roi-banner { background: var(--navy); border-radius: 9px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .roi-big  { font-size: 32px; font-weight: 900; color: var(--gold); }
+    .roi-bang { font-size: 12px; color: rgba(255,255,255,.6); max-width: 260px; line-height: 1.5; }
+
+    /* ── PRICING ── */
+    .price-box { background: var(--navy); border-radius: 14px; padding: 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; margin-top: 36px; }
+    .price-left .price-plan  { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    .price-left .price-num   { font-size: 52px; font-weight: 900; color: #fff; letter-spacing: -2px; line-height: 1; }
+    .price-left .price-unit  { font-size: 16px; font-weight: 400; color: rgba(255,255,255,.4); }
+    .price-left .price-desc  { font-size: 13px; color: rgba(255,255,255,.5); margin-top: 8px; }
+    .price-features { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 28px; }
+    .pf { font-size: 12px; color: rgba(255,255,255,.7); display: flex; gap: 7px; align-items: flex-start; }
+    .pf::before { content: '✓'; color: var(--gold); font-weight: 700; flex-shrink: 0; }
+
+    /* ── NEXT STEPS ── */
+    .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 36px; }
+    .step-card  { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: var(--shadow); }
+    .step-n     { font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
+    .step-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .step-desc  { font-size: 12px; color: var(--text-2); line-height: 1.6; }
+
+    /* ── DIVIDER ── */
+    .divider { height: 1px; background: var(--border); }
+
+    /* ── PRINT ── */
+    @media print { .nav, .nav-steps, .nav-cta { display: none; } body { padding-top: 0; } section { padding: 40px 0; } }
+    body { padding-top: 52px; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-mark">N</div>
+    <span class="nav-name">Nathan — Agent IA</span>
+  </div>
+  <div class="nav-steps">
+    <a href="#probleme"   class="nav-step">Le problème</a>
+    <a href="#solution"   class="nav-step">La solution</a>
+    <a href="#comment"    class="nav-step">Comment ça marche</a>
+    <a href="#roi"        class="nav-step">Votre ROI</a>
+    <a href="#tarif"      class="nav-step">Tarif</a>
+    <a href="#suite"      class="nav-step">La suite</a>
+  </div>
+  <a href="roi-calculator.html" target="_blank" class="nav-cta">Calculer mon ROI</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="top">
+  <div class="container">
+    <div class="tag tag-gold">O'Walker Institut · Montpellier</div>
+    <h1>Votre salon tourne.<br><em>Même quand vous êtes en cabine.</em></h1>
+    <p class="sub">Nathan répond à vos appels, prend les rendez-vous et relance vos clients absents — pendant que vous vous concentrez sur votre métier.</p>
+    <div class="hero-btns">
+      <a href="#roi" class="btn btn-gold">Voir mon ROI</a>
+      <a href="#comment" class="btn btn-outline">Comment ça marche</a>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────── PROBLÈME ──────────── -->
+<section id="probleme">
+  <div class="container">
+    <div class="tag tag-red">Ce que vous perdez en ce moment</div>
+    <h2>Chaque jour sans Nathan,<br>c'est de l'argent qui part.</h2>
+    <p class="lead">Vous gérez tout seul. Un client en cabine, le téléphone qui sonne, un absent qui ne répond pas. Ces petits problèmes coûtent plus cher qu'on ne le croit.</p>
+
+    <div class="problems">
+      <div class="problem">
+        <div class="problem-num">22%</div>
+        <div class="problem-title">Appels manqués</div>
+        <div class="problem-desc">1 appel sur 4 tombe dans le vide quand vous êtes avec un client. Ce client appelle la concurrence.</div>
+      </div>
+      <div class="problem">
+        <div class="problem-num">22%</div>
+        <div class="problem-title">Taux de no-show moyen</div>
+        <div class="problem-desc">Plus d'1 rendez-vous sur 5 n'est pas honoré. Sans relance automatique, ce créneau reste vide — et vous perdez la prestation.</div>
+      </div>
+      <div class="problem">
+        <div class="problem-num">0€</div>
+        <div class="problem-title">Créneau vide = revenu perdu</div>
+        <div class="problem-desc">Un créneau vide ne se rattrape pas. Sans liste d'attente active, vous ne pouvez pas le combler à temps.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── CHIFFRES ──────────── -->
+<div class="numbers">
+  <div class="container">
+    <div class="numbers-grid">
+      <div class="num-cell">
+        <div class="num-val">24h</div>
+        <div class="num-lbl">Nathan disponible</div>
+      </div>
+      <div class="num-cell">
+        <div class="num-val">-78%</div>
+        <div class="num-lbl">Taux de no-show</div>
+      </div>
+      <div class="num-cell">
+        <div class="num-val">+22%</div>
+        <div class="num-lbl">CA récupéré en moyenne</div>
+      </div>
+      <div class="num-cell">
+        <div class="num-val">8j</div>
+        <div class="num-lbl">Pour être rentabilisé</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────── SOLUTION ──────────── -->
+<section id="solution">
+  <div class="container">
+    <div class="tag tag-gold">La solution</div>
+    <h2>Nathan fait tout ce qui<br>vous prend du temps.</h2>
+    <p class="lead">Un agent vocal IA connecté à votre agenda, votre CRM et vos clients. Il gère l'opérationnel. Vous gérez votre métier.</p>
+
+    <div class="solution-grid">
+      <div class="sol-card highlight">
+        <div class="sol-num">01</div>
+        <div class="sol-title">Il répond à vos appels 24h/24</div>
+        <div class="sol-desc">Nathan décroche, identifie le service demandé, répond aux questions sur les prix et durées, et propose directement un créneau disponible via votre Calendly.</div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-num">02</div>
+        <div class="sol-title">Il envoie les rappels J-1</div>
+        <div class="sol-desc">La veille de chaque rendez-vous, Nathan envoie automatiquement un SMS de rappel personnalisé. Plus d'oublis, moins d'absences.</div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-num">03</div>
+        <div class="sol-title">Il relance les absents</div>
+        <div class="sol-desc">Dès qu'un client ne se présente pas, Nathan l'identifie, attend 30 minutes, et envoie un message de relance avec un lien de re-réservation immédiat.</div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-num">04</div>
+        <div class="sol-title">Il remplit les créneaux vides</div>
+        <div class="sol-desc">Nathan consulte votre liste d'attente et propose le créneau libéré en temps réel. Zéro perte de revenu sur les absences.</div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-num">05</div>
+        <div class="sol-title">Il gère votre CRM</div>
+        <div class="sol-desc">Chaque appel sans réservation crée automatiquement une fiche prospect. Vous envoyez une relance groupée en 1 clic depuis le dashboard.</div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-num">06</div>
+        <div class="sol-title">Il vous envoie un résumé chaque soir</div>
+        <div class="sol-desc">À 20h, vous recevez un SMS avec votre journée : RDV honorés, CA du jour, absents, nouveaux prospects. Toujours informé.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── COMMENT ÇA MARCHE ──────────── -->
+<section id="comment" style="background:var(--white);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="tag tag-navy">Comment ça marche</div>
+    <h2>Des automatisations qui tournent<br>sans que vous touchiez à rien.</h2>
+    <p class="lead" style="margin-bottom:36px;">Nathan est connecté à Make.com. Chaque événement déclenche automatiquement la bonne action, au bon moment, pour le bon client.</p>
+
+    <!-- WF 1 -->
+    <div class="wf-block">
+      <div class="wf-header">
+        <div>
+          <div class="wf-title">Un client réserve en ligne</div>
+          <div class="wf-desc">Via le lien Calendly — n'importe quand, même à 23h</div>
+        </div>
+        <span class="wf-status">Actif</span>
+      </div>
+      <div class="flow">
+        <div class="flow-step"><div class="fbox trig"><div class="fbox-lbl">Déclencheur</div><div class="fbox-name">Calendly</div><div class="fbox-sub">Nouvelle réservation</div></div></div>
+        <div class="arrow">→</div>
+        <div class="flow-step"><div class="fbox act"><div class="fbox-lbl">Immédiat</div><div class="fbox-name">SMS confirmation</div><div class="fbox-sub">Envoyé au client</div></div></div>
+        <div class="arrow">→</div>
+        <div class="flow-step"><div class="fbox act"><div class="fbox-lbl">Ajout CRM</div><div class="fbox-name">Fiche client</div><div class="fbox-sub">Créée automatiquement</div></div></div>
+        <div class="arrow">→</div>
+        <div class="flow-step"><div class="fbox act"><div class="fbox-lbl">J-1</div><div class="fbox-name">Rappel SMS</div><div class="fbox-sub">Programmé la veille</div></div></div>
+      </div>
+    </div>
+
+    <!-- WF 2 -->
+    <div class="wf-block">
+      <div class="wf-header">
+        <div>
+          <div class="wf-title">Un client ne vient pas (no-show)</div>
+          <div class="wf-desc">Marqué "absent" dans le dashboard — Nathan prend le relais</div>
+        </div>
+        <span class="wf-status">Actif</span>
+      </div>
+      <div class="flow">
+        <div class="flow-step"><div class="fbox trig"><div class="fbox-lbl">Déclencheur</div><div class="fbox-name">Statut : Absent</div><div class="fbox-sub">Dashboard</div></div></div>
+        <div class="arrow">→</div>
+        <div class="flow-step"><div class="fbox act"><div class="fbox-lbl">Attente</div><div class="fbox-name">30 minutes</div><div class="fbox-sub">Délai de grâce</div></div></div>
+        <div class="arrow">→</div>
+        <div class="flow-step"><div class="fbox act"><div class="fbox-lbl">Relance</div><div class="fbox-name">SMS automatique</div><div class="fbox-sub">Lien re-réservation</div></div></div>
+        <div class="arrow">→</div>
+        <div class="flow-step"><div class="fbox act"><div class="fbox-lbl">Liste d'attente</div><div class="fbox-name">Créneau proposé</div><div class="fbox-sub">Client suivant averti</div></div></div>
+      </div>
+    </div>
+
+    <!-- WF 3 -->
+    <div class="wf-block">
+      <div class="wf-header">
+        <div>
+          <div class="wf-title">Un appel entrant sans réservation</div>
+          <div class="wf-desc">Nathan répond, discute — le client ne réserve pas tout de suite</div>
+        </div>
+        <span class="wf-status">Actif</span>
+      </div>
+      <div class="flow">
+        <div class="flow-step"><div class="fbox trig"><div class="fbox-lbl">Déclencheur</div><div class="fbox-name">Appel Nathan</div><div class="fbox-sub">Sans RDV pris</div></div></div>
+        <div class="arrow">→</div>
+        <div class="flow-step"><div class="fbox act"><div class="fbox-lbl">Immédiat</div><div class="fbox-name">Prospect CRM</div><div class="fbox-sub">Nom + numéro + service</div></div></div>
+        <div class="arrow">→</div>
+        <div class="flow-step"><div class="fbox act"><div class="fbox-lbl">48h après</div><div class="fbox-name">Relance SMS</div><div class="fbox-sub">Code promo inclus</div></div></div>
+        <div class="arrow">→</div>
+        <div class="flow-step"><div class="fbox act"><div class="fbox-lbl">Notification</div><div class="fbox-name">Alerte gérant</div><div class="fbox-sub">Résumé prospects</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── ROI ──────────── -->
+<section id="roi">
+  <div class="container">
+    <div class="tag tag-gold">Votre retour sur investissement</div>
+    <h2>Calculez ce que Nathan<br>vous rapporte chaque mois.</h2>
+    <p class="lead">Les chiffres ci-dessous sont basés sur vos données. Ajustez-les pour voir votre ROI exact.</p>
+
+    <!-- ROI Calculator embedé -->
+    <div class="roi-calc-box">
+      <div style="font-size:12px;font-weight:600;color:var(--text-3);margin-bottom:16px;text-transform:uppercase;letter-spacing:.06em;">Vos données</div>
+      <div class="calc-grid">
+        <div class="cf">
+          <label>Panier moyen (€)</label>
+          <input type="number" id="c-panier" value="81" oninput="calcRoi()">
+        </div>
+        <div class="cf">
+          <label>Rendez-vous par jour</label>
+          <input type="number" id="c-rdv" value="8" oninput="calcRoi()">
+        </div>
+        <div class="cf">
+          <label>Jours ouverts / mois</label>
+          <input type="number" id="c-jours" value="22" oninput="calcRoi()">
+        </div>
+        <div class="cf">
+          <label>Taux de no-show actuel (%)</label>
+          <input type="number" id="c-noshow" value="22" oninput="calcRoi()">
+        </div>
+      </div>
+
+      <div class="calc-results">
+        <div class="cr-cell">
+          <div class="cr-lbl">CA actuel / mois</div>
+          <div class="cr-val n" id="cr-actuel">—</div>
+        </div>
+        <div class="cr-cell">
+          <div class="cr-lbl">CA pessimiste</div>
+          <div class="cr-val r" id="cr-pess">—</div>
+        </div>
+        <div class="cr-cell">
+          <div class="cr-lbl">CA avec Nathan</div>
+          <div class="cr-val g" id="cr-nathan">—</div>
+        </div>
+      </div>
+
+      <div class="roi-banner">
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:4px;">Gain net mensuel</div>
+          <div class="roi-big" id="cr-gain">—</div>
+        </div>
+        <div class="roi-bang" id="cr-payback">Entrez vos chiffres pour voir votre délai de retour.</div>
+        <a href="roi-calculator.html" target="_blank" class="btn btn-gold" style="font-size:11px;padding:9px 18px;">Analyse complète</a>
+      </div>
+    </div>
+
+    <!-- Avant / Après -->
+    <div class="roi-split">
+      <div class="roi-before">
+        <div class="roi-label">Sans Nathan</div>
+        <div class="roi-num" id="roi-avant">—</div>
+        <ul class="roi-list">
+          <li>22% d'appels manqués = clients perdus</li>
+          <li>22% de no-show = créneaux vides</li>
+          <li>Relances manuelles chronophages</li>
+          <li>Agenda géré pendant les soins</li>
+        </ul>
+      </div>
+      <div class="roi-after">
+        <div class="roi-label">Avec Nathan</div>
+        <div class="roi-num" id="roi-apres">—</div>
+        <ul class="roi-list">
+          <li>100% des appels décrochés, 24h/24</li>
+          <li>No-show réduit à 5% par relances auto</li>
+          <li>Créneaux vides comblés depuis la liste d'attente</li>
+          <li>Résumé SMS chaque soir</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── TARIF ──────────── -->
+<section id="tarif" style="background:var(--white);border-top:1px solid var(--border);">
+  <div class="container">
+    <div class="tag tag-navy">Investissement</div>
+    <h2>Un seul abonnement.<br>Tout inclus.</h2>
+    <p class="lead">Aucune surprise. Aucun engagement. Rentabilisé en moins de 2 semaines.</p>
+
+    <div class="price-box">
+      <div class="price-left">
+        <div class="price-plan">Offre Pro — Recommandée</div>
+        <div>
+          <span class="price-num">297</span>
+          <span class="price-unit"> €/mois</span>
+        </div>
+        <div class="price-desc">Sans engagement · Résiliation à tout moment</div>
+      </div>
+      <div class="price-features">
+        <div class="pf">Agent vocal Nathan 24h/24</div>
+        <div class="pf">Relances absents automatiques</div>
+        <div class="pf">Rappels RDV J-1 SMS</div>
+        <div class="pf">CRM prospects complet</div>
+        <div class="pf">Dashboard temps réel</div>
+        <div class="pf">Messagerie groupée</div>
+        <div class="pf">Workflows Make.com inclus</div>
+        <div class="pf">200 SMS/mois inclus</div>
+        <div class="pf">Résumé quotidien SMS</div>
+        <div class="pf">Support dédié</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── SUITE ──────────── -->
+<section id="suite">
+  <div class="container">
+    <div class="tag tag-gold">Ce qu'on fait ensemble</div>
+    <h2>Opérationnel en 72h.</h2>
+    <p class="lead">On s'occupe de tout. Vous n'avez rien de technique à faire.</p>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-n">Aujourd'hui</div>
+        <div class="step-title">On valide ensemble</div>
+        <div class="step-desc">On calibre Nathan sur vos services, vos prix et votre façon de parler à vos clients. 30 minutes suffisent.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-n">Dans 48h</div>
+        <div class="step-title">Nathan est configuré</div>
+        <div class="step-desc">On installe l'agent vocal, on connecte Calendly, on paramètre les workflows Make. Vous testez avant de valider.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-n">Dans 72h</div>
+        <div class="step-title">C'est en ligne</div>
+        <div class="step-desc">Nathan décroche vos appels, vos automatisations tournent. Vous recevez votre premier résumé quotidien le soir même.</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:44px;padding:36px;background:var(--navy);border-radius:14px;">
+      <div style="font-size:24px;font-weight:800;color:#fff;margin-bottom:10px;">On démarre quand vous voulez.</div>
+      <div style="font-size:14px;color:rgba(255,255,255,.5);margin-bottom:24px;">Aucun engagement. Rentabilisé en 8 jours en moyenne.</div>
+      <a href="https://calendly.com/bounabatilias2004/reservation-institut-de-beaute" target="_blank" class="btn btn-gold" style="font-size:14px;padding:14px 32px;">Réserver la configuration</a>
+    </div>
+  </div>
+</section>
+
+<script>
+function fmt(v){ return Math.round(v).toLocaleString('fr-FR') + '€'; }
+
+function calcRoi(){
+  const p = parseFloat(document.getElementById('c-panier').value) || 81;
+  const r = parseFloat(document.getElementById('c-rdv').value)    || 8;
+  const j = parseFloat(document.getElementById('c-jours').value)  || 22;
+  const n = parseFloat(document.getElementById('c-noshow').value) || 22;
+  const COUT = 297;
+
+  const rdvMois  = r * j;
+  const caActuel = Math.round(rdvMois * (1 - n/100) * p);
+  const caPess   = Math.round(caActuel * 0.75);
+  const caNathan = Math.round(rdvMois * 0.95 * p * 1.15);
+  const gainBrut = caNathan - caActuel;
+  const gainNet  = gainBrut - COUT;
+  const roi      = COUT > 0 ? (gainNet / COUT).toFixed(1) : '∞';
+  const payback  = gainNet > 0 ? Math.round(COUT / (gainNet / 30)) : null;
+
+  document.getElementById('cr-actuel').textContent  = fmt(caActuel);
+  document.getElementById('cr-pess').textContent    = fmt(caPess);
+  document.getElementById('cr-nathan').textContent  = fmt(caNathan);
+  document.getElementById('cr-gain').textContent    = (gainNet >= 0 ? '+' : '') + fmt(gainNet);
+  document.getElementById('roi-avant').textContent  = fmt(caPess);
+  document.getElementById('roi-apres').textContent  = fmt(caNathan);
+  document.getElementById('cr-payback').textContent = payback
+    ? 'Nathan est rentabilisé en ' + payback + ' jour' + (payback > 1 ? 's' : '') + '. Chaque euro investi rapporte ' + roi + '€.'
+    : 'Entrez vos chiffres pour voir votre délai de retour.';
+}
+
+calcRoi();
+</script>
+</body>
+</html>

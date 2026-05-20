@@ -1,564 +1,1231 @@
 <!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BeautyVoice — Agenda</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      * { font-family: ui-sans-serif, system-ui, sans-serif; box-sizing: border-box; }
-      body { background: #f3f4f8; color: #111827; }
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Nathan — O'Walker Institut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --bg: #f5f5f5;
+    --surface: #ffffff;
+    --text: #111111;
+    --text-2: #555555;
+    --text-3: #999999;
+    --border: #e8e8e8;
+    --hover: #f0f0f0;
+    --sidebar-w: 200px;
+  }
+  * { font-family: 'Inter', ui-sans-serif, sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); display: flex; min-height: 100vh; font-size: 13px; }
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
 
-      ::-webkit-scrollbar { width: 4px; }
-      ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 99px; }
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w); flex-shrink: 0; background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: fixed; inset: 0 auto 0 0; z-index: 30;
+    display: flex; flex-direction: column; overflow-y: auto;
+  }
+  .sidebar-logo {
+    padding: 20px 18px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-mark {
+    width: 28px; height: 28px; border-radius: 5px; background: var(--text);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; color: #fff; letter-spacing: -.5px;
+  }
+  .logo-name { font-size: 13px; font-weight: 700; margin-top: 10px; }
+  .logo-sub  { font-size: 11px; color: var(--text-3); margin-top: 1px; }
 
-      .card {
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
-      }
+  .nav-group { padding: 16px 10px 6px; }
+  .nav-label { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); padding: 0 8px; margin-bottom: 4px; }
+  .nav-link {
+    display: block; padding: 7px 10px; border-radius: 5px; cursor: pointer;
+    font-size: 12px; font-weight: 500; color: var(--text-2);
+    transition: background .1s, color .1s; text-decoration: none;
+    margin-bottom: 1px;
+  }
+  .nav-link:hover  { background: var(--hover); color: var(--text); }
+  .nav-link.active { background: var(--hover); color: var(--text); font-weight: 600; }
 
-      .row-venu td { font-weight: 700; }
-      .row-absent td { opacity: 0.38; }
+  .sidebar-footer {
+    margin-top: auto; padding: 16px 18px;
+    border-top: 1px solid var(--border);
+  }
+  .agent-row { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
+  .agent-label { font-size: 11px; font-weight: 600; }
+  .agent-sub   { font-size: 10px; color: var(--text-3); }
 
-      .note-input {
-        width: 100%;
-        border: none;
-        border-bottom: 1.5px solid #e5e7eb;
-        outline: none;
-        font-size: 12px;
-        color: #6b7280;
-        padding: 3px 0;
-        background: transparent;
-        margin-top: 4px;
-        transition: border-color 0.15s;
-      }
-      .note-input:focus { border-bottom-color: #111827; }
+  /* ── MAIN ── */
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
-      .btn-raw {
-        font-size: 11px;
-        font-weight: 600;
-        padding: 3px 9px;
-        border-radius: 6px;
-        border: 1.5px solid #e5e7eb;
-        background: #fff;
-        cursor: pointer;
-        letter-spacing: 0.02em;
-        transition: all 0.12s;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-      }
-      .btn-raw:hover { background: #f9fafb; border-color: #d1d5db; }
-      .btn-raw.active-venu  { border-color: #111827; background: #111827; color: #fff; box-shadow: 0 2px 6px rgba(17,24,39,0.22); }
-      .btn-raw.active-absent { border-color: #9ca3af; color: #6b7280; background: #f9fafb; }
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 52px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 20;
+  }
+  .topbar-title { font-size: 13px; font-weight: 600; }
+  .topbar-meta  { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .live-tag {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 500; color: var(--text-3);
+  }
 
-      .btn-panique {
-        font-size: 11px;
-        font-weight: 700;
-        padding: 3px 9px;
-        border-radius: 6px;
-        border: 1.5px solid #fca5a5;
-        background: #fff5f5;
-        color: #dc2626;
-        cursor: pointer;
-        margin-top: 5px;
-        display: inline-block;
-        transition: all 0.12s;
-        box-shadow: 0 1px 3px rgba(239,68,68,0.12);
-      }
-      .btn-panique:hover { background: #ef4444; color: #fff; border-color: #ef4444; box-shadow: 0 3px 10px rgba(239,68,68,0.28); }
+  /* ── KPI ── */
+  .kpi-row { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .kpi-cell {
+    flex: 1; padding: 16px 24px; border-right: 1px solid var(--border);
+    transition: background .1s;
+  }
+  .kpi-cell:last-child { border-right: none; }
+  .kpi-cell:hover { background: var(--hover); }
+  .kpi-lbl { font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+  .kpi-val { font-size: 22px; font-weight: 700; }
+  .kpi-sub { font-size: 10px; color: var(--text-3); margin-top: 3px; }
+  .kpi-sub.up   { color: #22c55e; }
+  .kpi-sub.down { color: #ef4444; }
 
-      .btn-combler {
-        font-size: 11px;
-        font-weight: 700;
-        padding: 6px 10px;
-        border-radius: 7px;
-        border: none;
-        background: #111827;
-        color: #fff;
-        cursor: pointer;
-        display: none;
-        margin-top: 9px;
-        width: 100%;
-        transition: all 0.12s;
-        box-shadow: 0 2px 7px rgba(17,24,39,0.18);
-      }
-      .btn-combler.visible { display: block; }
-      .btn-combler:hover { background: #374151; box-shadow: 0 4px 12px rgba(17,24,39,0.28); }
+  /* ── CONTENT ── */
+  .content { padding: 24px 28px 48px; flex: 1; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
 
-      .modal-overlay {
-        display: none;
-        position: fixed; inset: 0;
-        background: rgba(0,0,0,0.38);
-        backdrop-filter: blur(3px);
-        z-index: 50;
-        align-items: center;
-        justify-content: center;
-      }
-      .modal-overlay.open { display: flex; }
-      .modal-box {
-        background: #fff;
-        border-radius: 16px;
-        box-shadow: 0 24px 60px rgba(0,0,0,0.18), 0 6px 16px rgba(0,0,0,0.08);
-        padding: 32px;
-        max-width: 460px;
-        width: 90%;
-      }
+  /* ── SECTION HEADER ── */
+  .sec-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .sec-title { font-size: 14px; font-weight: 700; }
+  .sec-sub   { font-size: 11px; color: var(--text-3); margin-top: 2px; }
 
-      .nav-link {
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        color: #9ca3af;
-        cursor: pointer;
-        padding: 6px 0;
-        border-bottom: 2px solid transparent;
-        transition: color 0.15s, border-color 0.15s;
-      }
-      .nav-link.active { color: #111827; border-bottom-color: #111827; }
-      .nav-link:hover  { color: #374151; }
+  /* ── TABLE ── */
+  .surface { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .tbl { width: 100%; border-collapse: collapse; }
+  .tbl thead th {
+    font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--text-3); padding: 10px 16px; text-align: left;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+  }
+  .tbl tbody td { padding: 12px 16px; border-top: 1px solid var(--border); vertical-align: middle; }
+  .tbl tbody tr:first-child td { border-top: none; }
+  .tbl tbody tr:hover { background: #fafafa; }
 
-      .relance-ok   { font-size: 11px; color: #9ca3af; }
-      .relance-fail { font-size: 11px; color: #dc2626; font-weight: 700; }
-      .btn-relancer {
-        font-size: 10px;
-        font-weight: 700;
-        padding: 2px 7px;
-        border-radius: 5px;
-        border: 1.5px solid #111827;
-        background: #fff;
-        cursor: pointer;
-        margin-left: 4px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.06);
-        transition: all 0.12s;
-      }
-      .btn-relancer:hover { background: #111827; color: #fff; }
-      .relance-sent { font-size: 11px; color: #d1d5db; font-weight: 400; text-decoration: line-through; }
+  /* ── BUTTONS ── */
+  .btn {
+    font-size: 11px; font-weight: 500; padding: 6px 13px; border-radius: 5px;
+    border: 1px solid var(--border); background: var(--surface); cursor: pointer;
+    transition: background .1s, border-color .1s; color: var(--text);
+    display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  }
+  .btn:hover { background: var(--hover); border-color: #ccc; }
+  .btn-dark  { background: var(--text); color: #fff; border-color: var(--text); }
+  .btn-dark:hover { background: #333; border-color: #333; }
+  .btn-sm    { font-size: 10px; padding: 4px 9px; }
+  .btn-lg    { font-size: 12px; padding: 9px 18px; }
+  .btn-block { width: 100%; justify-content: center; }
+  .btn-ghost { border-color: transparent; background: transparent; }
+  .btn-ghost:hover { background: var(--hover); border-color: var(--border); }
+  .btn-red   { color: #ef4444; border-color: #fecaca; }
+  .btn-red:hover { background: #ef4444; color: #fff; border-color: #ef4444; }
 
-      .kpi-card {
-        background: #fff;
-        border-radius: 12px;
-        padding: 18px 24px 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
-        flex: 1;
-        transition: box-shadow 0.15s;
-      }
-      .kpi-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  /* ── STATUS PILLS ── */
+  .tag { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border); background: var(--bg); color: var(--text-2); white-space: nowrap; }
+  .tag-green { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+  .tag-red   { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+  .tag-amber { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+  .tag-blue  { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
 
-      thead th {
-        font-size: 10px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: #9ca3af;
-        font-weight: 700;
-        padding: 12px 16px;
-        text-align: left;
-        background: #f9fafb;
-      }
-      thead tr th:first-child { border-radius: 12px 0 0 0; }
-      thead tr th:last-child  { border-radius: 0 12px 0 0; }
-      tbody td { padding: 14px 16px; font-size: 13px; vertical-align: top; }
-      tbody tr { border-top: 1px solid #f3f4f6; transition: background 0.1s; }
-      tbody tr:first-child { border-top: none; }
-      tbody tr:hover { background: #fafbfc; }
+  /* ── STATUS BTNS ── */
+  .sbtn { font-size: 10px; font-weight: 500; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; transition: all .1s; }
+  .sbtn.sv  { background: var(--text); color: #fff; border-color: var(--text); }
+  .sbtn.sa  { background: var(--bg); color: var(--text-3); }
 
-      .live-badge {
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        background: #111827;
-        color: #fff;
-        padding: 5px 13px;
-        border-radius: 99px;
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        box-shadow: 0 2px 8px rgba(17,24,39,0.22);
-      }
-      .live-dot {
-        width: 6px; height: 6px;
-        background: #4ade80;
-        border-radius: 50%;
-        animation: blink 1.6s ease-in-out infinite;
-      }
-      @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50%       { opacity: 0.3; }
-      }
+  /* ── CONTACT BTN (replaces panique) ── */
+  .btn-contact { font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 4px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; cursor: pointer; margin-top: 5px; display: inline-block; transition: all .12s; }
+  .btn-contact:hover { background: #dc2626; color: #fff; border-color: #dc2626; }
 
-      .waitlist-card {
-        background: #fff;
-        border-radius: 10px;
-        padding: 14px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.03);
-        transition: box-shadow 0.15s;
-      }
-      .waitlist-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.1); }
-    </style>
-  </head>
-  <body class="min-h-screen flex flex-col">
+  /* ── ROW STATES ── */
+  .row-venu td   { font-weight: 600; }
+  .row-absent td { opacity: .4; }
 
-    <!-- NAV -->
-    <nav style="background:#fff; box-shadow: 0 1px 6px rgba(0,0,0,0.07);" class="px-8 py-4 flex items-center justify-between sticky top-0 z-40">
-      <div class="flex items-center gap-8">
-        <span class="text-base font-black tracking-tight">BEAUTYVOICE</span>
-        <div class="flex items-center gap-6">
-          <span class="nav-link active" onclick="setNav(this)">Agenda</span>
-          <span class="nav-link" onclick="setNav(this)">Clients</span>
-          <span class="nav-link" onclick="setNav(this)">Relances</span>
-          <span class="nav-link" onclick="setNav(this)">Statistiques</span>
+  /* ── RELANCE TEXT ── */
+  .rel-ok   { font-size: 11px; color: var(--text-3); }
+  .rel-fail { font-size: 11px; color: #dc2626; font-weight: 600; }
+  .rel-sent { font-size: 11px; color: var(--text-3); text-decoration: line-through; }
+  .btn-rel  { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--text); background: var(--surface); cursor: pointer; margin-left: 5px; transition: all .12s; }
+  .btn-rel:hover { background: var(--text); color: #fff; }
+
+  /* ── NOTE ── */
+  .note-inp { width: 100%; border: none; border-bottom: 1px solid var(--border); outline: none; font-size: 11px; color: var(--text-2); padding: 2px 0; background: transparent; margin-top: 4px; }
+  .note-inp:focus { border-bottom-color: var(--text); }
+
+  /* ── WAITLIST CARD ── */
+  .wcard { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 13px; margin-bottom: 8px; transition: border-color .15s; }
+  .wcard:hover { border-color: #bbb; }
+  .btn-fill { font-size: 10px; font-weight: 600; padding: 5px 10px; border-radius: 4px; border: none; background: var(--text); color: #fff; cursor: pointer; display: none; margin-top: 8px; width: 100%; transition: background .12s; }
+  .btn-fill.vis { display: block; }
+  .btn-fill:hover { background: #333; }
+
+  /* ── INPUT ── */
+  .inp { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: 12px; outline: none; background: var(--surface); transition: border-color .15s; color: var(--text); }
+  .inp:focus { border-color: var(--text); }
+  .inp::placeholder { color: var(--text-3); }
+  textarea.inp { resize: vertical; min-height: 88px; line-height: 1.6; }
+
+  /* ── MODAL ── */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); backdrop-filter: blur(3px); z-index: 50; align-items: center; justify-content: center; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,.15); padding: 24px 26px; max-width: 480px; width: 93%; max-height: 90vh; overflow-y: auto; }
+  .modal-title { font-size: 14px; font-weight: 700; margin-bottom: 18px; }
+
+  /* ── MESSAGES ── */
+  .msg-layout { display: grid; grid-template-columns: 260px 1fr; gap: 16px; }
+  .tmpl-item { border: 1px solid var(--border); border-radius: 7px; padding: 11px 13px; cursor: pointer; transition: border-color .15s; margin-bottom: 6px; }
+  .tmpl-item:hover { border-color: #aaa; }
+  .tmpl-item.sel   { border-color: var(--text); background: #fafafa; }
+  .tmpl-item .t-name { font-size: 12px; font-weight: 600; }
+  .tmpl-item .t-prev { font-size: 11px; color: var(--text-3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .var-chip { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; margin: 2px; display: inline-block; transition: all .1s; }
+  .var-chip:hover { background: var(--text); color: #fff; border-color: var(--text); }
+
+  .recip-opt { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; margin-bottom: 6px; transition: border-color .15s; }
+  .recip-opt:hover { border-color: #aaa; }
+  .recip-opt.sel   { border-color: var(--text); }
+  .recip-opt input[type=radio] { cursor: pointer; }
+
+  /* ── HISTORY ── */
+  .hist-item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+  .hist-item:last-child { border-bottom: none; }
+  .hist-dot  { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
+
+  /* ── STATS ── */
+  .sbar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .sbar-lbl { font-size: 11px; color: var(--text-2); min-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sbar-bg  { flex: 1; height: 5px; border-radius: 99px; background: var(--border); overflow: hidden; }
+  .sbar-fil { height: 100%; border-radius: 99px; background: var(--text); transition: width .5s; }
+  .sbar-val { font-size: 11px; font-weight: 600; min-width: 36px; text-align: right; }
+
+  /* ── FICHE ── */
+  .fiche { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px 22px; margin-bottom: 12px; }
+  .fiche-pitch { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 13px 16px; margin: 14px 0; border-left: 3px solid var(--text); }
+
+  /* ── WORKFLOW ── */
+  .wf-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border); }
+  .wf-row:last-child { border-bottom: none; }
+  .wf-name  { font-size: 13px; font-weight: 500; }
+  .wf-desc  { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+  .wf-badge { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 99px; }
+  .wf-on  { background: #f0fdf4; color: #15803d; }
+  .wf-off { background: var(--bg); color: var(--text-3); }
+
+  /* ── GRID UTILS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+  .col-2  { grid-column: span 2; }
+
+  /* ── TOAST ── */
+  #toast { position: fixed; bottom: 22px; right: 22px; background: var(--text); color: #fff; padding: 10px 18px; border-radius: 7px; font-size: 12px; font-weight: 500; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 99; box-shadow: 0 4px 16px rgba(0,0,0,.18); }
+  </style>
+</head>
+<body>
+
+<!-- ─────────────────────── SIDEBAR ─────────────────────── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">N</div>
+    <div class="logo-name">Nathan</div>
+    <div class="logo-sub">O'Walker Institut</div>
+  </div>
+
+  <nav class="nav-group">
+    <div class="nav-label">Gestion</div>
+    <a class="nav-link active" data-tab="agenda"       onclick="setTab(this)">Agenda</a>
+    <a class="nav-link"        data-tab="clients"      onclick="setTab(this)">Clients <span id="nb-clients" style="font-size:10px;color:var(--text-3);margin-left:4px;"></span></a>
+    <a class="nav-link"        data-tab="messages"     onclick="setTab(this)">Messages</a>
+    <a class="nav-link"        data-tab="relances"     onclick="setTab(this)">Relances</a>
+  </nav>
+
+  <nav class="nav-group">
+    <div class="nav-label">Analyse</div>
+    <a class="nav-link" data-tab="fiches" onclick="setTab(this)">Fiches produits</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="agent-row">
+      <div class="dot"></div>
+      <div>
+        <div class="agent-label">Nathan actif</div>
+        <div class="agent-sub">ElevenLabs · 24h/24</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ─────────────────────── MAIN ─────────────────────── -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div>
+      <div class="topbar-title" id="topbar-title">Agenda du jour</div>
+    </div>
+    <div class="topbar-right">
+      <span style="font-size:11px;color:var(--text-3);">Présence : <span id="taux-presence" style="font-weight:600;color:var(--text);">—</span></span>
+      <div class="live-tag"><div class="dot"></div> En direct</div>
+      <a href="https://calendly.com/bounabatilias2004/reservation-institut-de-beaute" target="_blank" class="btn btn-dark btn-sm">Réserver</a>
+    </div>
+  </header>
+
+  <!-- KPI STRIP -->
+  <div class="kpi-row">
+    <div class="kpi-cell">
+      <div class="kpi-lbl">Appels</div>
+      <div class="kpi-val" id="kpi-calls">—</div>
+      <div class="kpi-sub up" id="kpi-calls-sub"></div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-lbl">Rendez-vous</div>
+      <div class="kpi-val" id="kpi-rdv">—</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-lbl">Conversion</div>
+      <div class="kpi-val" id="kpi-conv">—</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-lbl">Panier moyen</div>
+      <div class="kpi-val" id="kpi-panier">—</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-lbl">Chiffre d'affaires</div>
+      <div class="kpi-val" id="kpi-revenue">—</div>
+      <div class="kpi-sub">aujourd'hui</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-lbl">Absences</div>
+      <div class="kpi-val" id="kpi-absents">0</div>
+      <div class="kpi-sub down" id="kpi-abs-sub" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ─── AGENDA ─── -->
+    <div class="tab-panel active" id="tab-agenda">
+      <div style="display:flex;gap:18px;align-items:flex-start;">
+        <!-- Table -->
+        <div style="flex:1;min-width:0;">
+          <div class="sec-hdr">
+            <div>
+              <div class="sec-title">Rendez-vous du jour</div>
+              <div class="sec-sub" id="total-badge">—</div>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-sm" onclick="setTab(document.querySelector('[data-tab=messages]'))">Envoyer un message</button>
+              <button class="btn btn-sm" onclick="openModal('modal-waitlist')">+ Liste d'attente</button>
+            </div>
+          </div>
+          <div class="surface">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Heure</th><th>Client</th><th>Prestation</th><th>Prix</th>
+                  <th>Statut</th><th>Relance</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="leads-table">
+                <tr><td colspan="7" style="text-align:center;padding:36px;color:var(--text-3);">Chargement…</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
-      <div class="flex items-center gap-5">
-        <span class="text-xs text-gray-400">Taux de présence : <span id="taux-presence" class="font-bold text-gray-900">92%</span></span>
-        <div class="live-badge"><div class="live-dot"></div>En direct</div>
-      </div>
-    </nav>
 
-    <!-- KPI STRIP -->
-    <div class="px-8 py-5 flex items-center gap-4">
-      <div class="kpi-card">
-        <p class="text-xs text-gray-400 uppercase tracking-widest mb-1 font-semibold">Appels</p>
-        <p id="kpi-calls" class="text-3xl font-black">—</p>
-      </div>
-      <div class="kpi-card">
-        <p class="text-xs text-gray-400 uppercase tracking-widest mb-1 font-semibold">RDV Pris</p>
-        <p id="kpi-rdv" class="text-3xl font-black">—</p>
-      </div>
-      <div class="kpi-card">
-        <p class="text-xs text-gray-400 uppercase tracking-widest mb-1 font-semibold">Conversion</p>
-        <p id="kpi-conv" class="text-3xl font-black">—%</p>
-      </div>
-      <div class="kpi-card">
-        <p class="text-xs text-gray-400 uppercase tracking-widest mb-1 font-semibold">Chiffre d'Affaires</p>
-        <p id="kpi-revenue" class="text-3xl font-black">—€</p>
+        <!-- Waitlist -->
+        <div style="width:210px;flex-shrink:0;">
+          <div class="sec-hdr" style="margin-bottom:12px;">
+            <div class="sec-title" style="font-size:12px;">Liste d'attente</div>
+          </div>
+          <div id="waitlist"></div>
+          <button class="btn btn-sm btn-block" style="margin-top:4px;" onclick="openModal('modal-waitlist')">Ajouter</button>
+        </div>
       </div>
     </div>
 
-    <!-- MAIN LAYOUT -->
-    <div class="flex flex-1 overflow-hidden px-8 pb-8 gap-6">
-
-      <!-- LEFT : TABLE AGENDA -->
-      <div class="flex-1 overflow-y-auto">
-        <div class="flex items-baseline justify-between mb-4">
-          <h2 class="text-base font-black tracking-tight">Rendez-vous du jour</h2>
-          <span id="total-badge" class="text-xs text-gray-400 font-medium">0 entrées</span>
+    <!-- ─── CLIENTS ─── -->
+    <div class="tab-panel" id="tab-clients">
+      <div class="sec-hdr">
+        <div>
+          <div class="sec-title">Clients & Prospects</div>
+          <div class="sec-sub">Base de données complète</div>
         </div>
-
-        <div class="card overflow-hidden">
-          <table class="w-full border-collapse">
-            <thead>
-              <tr>
-                <th>Heure</th>
-                <th>Client</th>
-                <th>Prestation</th>
-                <th>Prix</th>
-                <th>Statut</th>
-                <th>Relance SMS</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="leads-table">
-              <tr><td colspan="7" class="text-center py-12 text-gray-400 text-sm">En attente de données…</td></tr>
-            </tbody>
-          </table>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input type="text" class="inp" id="crm-search" style="width:190px;" placeholder="Rechercher…" oninput="filterClients()">
+          <button class="btn btn-sm btn-dark" onclick="openModal('modal-add-client')">Ajouter</button>
+          <button class="btn btn-sm" onclick="goMessages()">Envoyer un message</button>
+          <button class="btn btn-sm btn-red" onclick="deleteSelected()">Supprimer</button>
         </div>
       </div>
-
-      <!-- RIGHT : WAITLIST -->
-      <div style="width:260px; flex-shrink:0;" class="overflow-y-auto">
-        <div class="flex items-baseline justify-between mb-4">
-          <h3 class="text-xs font-black uppercase tracking-widest">Liste d'attente</h3>
-          <span class="text-xs text-gray-400">Express</span>
-        </div>
-        <div id="waitlist" class="space-y-3"></div>
+      <div class="surface">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th style="width:32px;"><input type="checkbox" id="check-all" onchange="toggleAll(this)"></th>
+              <th>Nom</th><th>Prénom</th><th>Email</th><th>Téléphone</th>
+              <th>Service</th><th>Statut</th><th>Ajouté</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="clients-table"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:11px;color:var(--text-3);" id="clients-count"></span>
       </div>
     </div>
 
-    <!-- MODAL PANIQUE -->
-    <div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)">
-      <div class="modal-box">
-        <div class="flex items-center gap-3 mb-5">
-          <span style="font-size:22px">⚡</span>
-          <p class="text-sm font-black uppercase tracking-widest">Mode Panique — SMS de secours</p>
+    <!-- ─── MESSAGES ─── -->
+    <div class="tab-panel" id="tab-messages">
+      <div class="sec-hdr">
+        <div>
+          <div class="sec-title">Messages</div>
+          <div class="sec-sub">Envoi groupé avec personnalisation par client</div>
         </div>
-        <div style="background:#f9fafb; border-radius:10px; padding:16px; font-size:13px; line-height:1.7; color:#374151; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" id="sms-preview"></div>
-        <div class="flex gap-3 mt-6">
-          <button onclick="validerEnvoi()" style="border-radius:8px; box-shadow: 0 2px 8px rgba(17,24,39,0.2);" class="flex-1 py-2.5 font-bold text-sm bg-gray-900 text-white cursor-pointer hover:bg-gray-800 transition-colors">Confirmer l'envoi simulé</button>
-          <button onclick="document.getElementById('modal-overlay').classList.remove('open')" style="border-radius:8px; border:1.5px solid #e5e7eb; box-shadow:0 1px 3px rgba(0,0,0,0.05);" class="flex-1 py-2.5 font-bold text-sm bg-white cursor-pointer hover:bg-gray-50 transition-colors">Annuler</button>
+        <button class="btn btn-sm btn-dark" onclick="newTemplate()">Nouveau template</button>
+      </div>
+
+      <div class="msg-layout">
+        <!-- Templates -->
+        <div>
+          <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px;">Templates</div>
+          <div id="tmpl-list"></div>
+          <button class="btn btn-sm btn-block btn-ghost" style="margin-top:4px;" onclick="newTemplate()">Créer un template</button>
+        </div>
+
+        <!-- Composer -->
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="surface" style="padding:20px;">
+            <div style="font-size:13px;font-weight:600;margin-bottom:16px;">Composer</div>
+
+            <div style="margin-bottom:12px;">
+              <label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Nom de la campagne</label>
+              <input id="msg-subject" class="inp" placeholder="Ex : Relance absents semaine 20">
+            </div>
+
+            <div style="margin-bottom:10px;">
+              <label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Message</label>
+              <textarea id="msg-body" class="inp" placeholder="Bonjour {prenom}…" oninput="updatePreview()"></textarea>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <div style="font-size:10px;font-weight:500;color:var(--text-3);margin-bottom:6px;">Insérer une variable :</div>
+              <span class="var-chip" onclick="insertVar('{prenom}')">{prenom}</span>
+              <span class="var-chip" onclick="insertVar('{service}')">{service}</span>
+              <span class="var-chip" onclick="insertVar('{date}')">{date}</span>
+              <span class="var-chip" onclick="insertVar('{promo}')">{promo}</span>
+              <span class="var-chip" onclick="insertVar('{lien}')">{lien}</span>
+            </div>
+
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:500;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Aperçu — Thomas, Dos complet</div>
+              <div id="msg-preview" style="font-size:12px;line-height:1.7;color:var(--text-2);">Rédigez un message pour voir l'aperçu.</div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <div style="font-size:11px;font-weight:600;margin-bottom:8px;">Destinataires</div>
+              <label class="recip-opt sel" id="ro-all">
+                <input type="radio" name="recip" value="all" checked onchange="updateRecip(this)">
+                <div>
+                  <div style="font-size:12px;font-weight:500;">Tous les clients</div>
+                  <div style="font-size:10px;color:var(--text-3);" id="count-all">—</div>
+                </div>
+              </label>
+              <label class="recip-opt" id="ro-rappel">
+                <input type="radio" name="recip" value="rappel" onchange="updateRecip(this)">
+                <div>
+                  <div style="font-size:12px;font-weight:500;">A rappeler</div>
+                  <div style="font-size:10px;color:var(--text-3);" id="count-rappel">—</div>
+                </div>
+              </label>
+              <label class="recip-opt" id="ro-chaud">
+                <input type="radio" name="recip" value="chaud" onchange="updateRecip(this)">
+                <div>
+                  <div style="font-size:12px;font-weight:500;">Prospects chauds</div>
+                  <div style="font-size:10px;color:var(--text-3);" id="count-chaud">—</div>
+                </div>
+              </label>
+              <label class="recip-opt" id="ro-sel">
+                <input type="radio" name="recip" value="selection" onchange="updateRecip(this)">
+                <div>
+                  <div style="font-size:12px;font-weight:500;">Sélection manuelle</div>
+                  <div style="font-size:10px;color:var(--text-3);" id="count-sel">Cochez des clients dans l'onglet Clients</div>
+                </div>
+              </label>
+            </div>
+
+            <button class="btn btn-dark btn-lg btn-block" onclick="sendMessage()">Envoyer</button>
+          </div>
+
+          <!-- Historique -->
+          <div class="surface" style="padding:18px;">
+            <div style="font-size:13px;font-weight:600;margin-bottom:14px;">Historique des envois</div>
+            <div id="msg-history">
+              <div style="text-align:center;padding:20px;font-size:12px;color:var(--text-3);">Aucun envoi pour le moment.</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <script>
-      // ─── STATE ───────────────────────────────────────────────────────────────
-      const notes = JSON.parse(localStorage.getItem('bv_notes') || '{}');
-      let currentPaniqueId = null;
-      let absentCount = 0;
+    <!-- ─── RELANCES ─── -->
+    <div class="tab-panel" id="tab-relances">
+      <div style="display:grid;grid-template-columns:250px 1fr;gap:16px;">
+        <div>
+          <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px;">Template actif</div>
+          <div id="rel-tmpl-list"></div>
+          <div class="surface" style="padding:14px;margin-top:10px;">
+            <div style="font-size:10px;font-weight:500;color:var(--text-3);margin-bottom:6px;">Aperçu</div>
+            <div id="rel-preview" style="font-size:12px;line-height:1.7;color:var(--text-2);min-height:64px;">Sélectionnez un template.</div>
+          </div>
+          <button class="btn btn-dark btn-block" style="margin-top:10px;" onclick="sendAllRelances()">Envoyer à tous les absents</button>
+        </div>
+        <div>
+          <div class="sec-hdr"><div class="sec-title">Clients à relancer</div></div>
+          <div class="surface">
+            <table class="tbl">
+              <thead><tr><th>Client</th><th>Téléphone</th><th>Service</th><th>Date</th><th>Statut</th><th></th></tr></thead>
+              <tbody id="relances-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      // ─── DONNÉES FICTIVES (remplacées par l'API quand disponible) ───────────
-      function rdv(h, m) {
-        const d = new Date(); d.setHours(h, m, 0, 0); return d.toISOString();
-      }
-      const DEMO_APPOINTMENTS = [
-        { id: 1, prenom: 'Karim',   telephone: '06 11 22 33 44', email: 'karim@mail.fr',   prestation: 'Dos complet',          prix: 40,  date_rdv: rdv(9,  0),  statut: 'Confirmé',   relance: 'ok'   },
-        { id: 2, prenom: 'Thomas',  telephone: '06 22 33 44 55', email: 'thomas@mail.fr',  prestation: 'Barbe',                prix: 24,  date_rdv: rdv(9, 45),  statut: 'Confirmé',   relance: 'ok'   },
-        { id: 3, prenom: 'Nicolas', telephone: '06 33 44 55 66', email: 'nicolas@mail.fr', prestation: 'Soin anti-acné',       prix: 70,  date_rdv: rdv(10, 30), statut: 'En attente', relance: 'fail' },
-        { id: 4, prenom: 'Antoine', telephone: '06 44 55 66 77', email: 'antoine@mail.fr', prestation: 'Massage bambous',      prix: 85,  date_rdv: rdv(11, 15), statut: 'Confirmé',   relance: 'ok'   },
-        { id: 5, prenom: 'Mehdi',   telephone: '06 55 66 77 88', email: 'mehdi@mail.fr',   prestation: 'Torse + ventre',       prix: 30,  date_rdv: rdv(12,  0), statut: 'Confirmé',   relance: 'ok'   },
-        { id: 6, prenom: 'Rayan',   telephone: '06 66 77 88 99', email: 'rayan@mail.fr',   prestation: 'Corps complet',        prix: 132, date_rdv: rdv(14,  0), statut: 'En attente', relance: 'ok'   },
-        { id: 7, prenom: 'Lucas',   telephone: '06 77 88 99 00', email: 'lucas@mail.fr',   prestation: 'Soin visage express',  prix: 55,  date_rdv: rdv(15, 30), statut: 'Confirmé',   relance: 'ok'   },
-        { id: 8, prenom: 'Julien',  telephone: '06 88 99 00 11', email: 'julien@mail.fr',  prestation: 'Blanchiment dentaire', prix: 80,  date_rdv: rdv(16, 15), statut: 'Confirmé',   relance: 'fail' },
-      ];
+    <!-- ─── STATISTIQUES ─── -->
+    <div class="tab-panel" id="tab-statistiques">
+      <div class="grid-3" style="margin-bottom:14px;">
+        <div class="surface" style="padding:18px;">
+          <div class="kpi-lbl">Panier moyen</div>
+          <div id="stat-panier" style="font-size:32px;font-weight:700;margin-top:6px;">—</div>
+          <div class="kpi-sub">par rendez-vous</div>
+        </div>
+        <div class="surface" style="padding:18px;">
+          <div class="kpi-lbl" style="color:#dc2626;">CA sans Nathan / 30j</div>
+          <div id="stat-pessimiste" style="font-size:32px;font-weight:700;color:#dc2626;margin-top:6px;">—</div>
+          <div class="kpi-sub">25 % de no-show</div>
+        </div>
+        <div class="surface" style="padding:18px;">
+          <div class="kpi-lbl" style="color:#15803d;">CA avec Nathan / 30j</div>
+          <div id="stat-realiste" style="font-size:32px;font-weight:700;color:#15803d;margin-top:6px;">—</div>
+          <div class="kpi-sub">5 % de no-show — relances auto</div>
+        </div>
+      </div>
+      <div class="surface" style="padding:18px;margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div class="kpi-lbl">Gain mensuel généré par Nathan</div>
+            <div id="stat-gain" style="font-size:28px;font-weight:700;margin-top:6px;">—</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="kpi-lbl">ROI</div>
+            <div id="stat-roi" style="font-size:24px;font-weight:700;margin-top:6px;">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="surface" style="padding:18px;">
+        <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);margin-bottom:14px;">Répartition par prestation</div>
+        <div id="service-chart"></div>
+      </div>
+    </div>
 
-      const WAITLIST = [
-        { id: 'w1', prenom: 'Yanis',  telephone: '06 91 23 45 67', prestation: 'Dos complet' },
-        { id: 'w2', prenom: 'Sami',   telephone: '06 82 34 56 78', prestation: 'Barbe' },
-        { id: 'w3', prenom: 'Kevin',  telephone: '06 73 45 67 89', prestation: 'Massage bambous' },
-      ];
+    <!-- ─── FICHES ─── -->
+    <div class="tab-panel" id="tab-fiches">
+      <div class="sec-hdr">
+        <div>
+          <div class="sec-title">Fiches produits</div>
+          <div class="sec-sub">Base de connaissances synchronisée avec Nathan</div>
+        </div>
+      </div>
+      <div id="fiches-container"></div>
+    </div>
 
-      let localRows = {};
+    <!-- ─── WORKFLOWS ─── -->
+    <div class="tab-panel" id="tab-workflows">
+      <div class="sec-hdr">
+        <div>
+          <div class="sec-title">Automations Make</div>
+          <div class="sec-sub">Etat de vos scénarios connectés à Nathan et Calendly</div>
+        </div>
+        <button class="btn btn-sm" onclick="toast('Connectez votre compte Make dans les paramètres.')">Configurer</button>
+      </div>
 
-      // ─── HELPERS ─────────────────────────────────────────────────────────────
-      function saveNotes() { localStorage.setItem('bv_notes', JSON.stringify(notes)); }
+      <div class="surface" style="padding:0 20px;margin-bottom:16px;">
+        <div class="wf-row">
+          <div>
+            <div class="wf-name">Confirmation de réservation</div>
+            <div class="wf-desc">Calendly → Make → SMS de confirmation immédiat au client</div>
+          </div>
+          <span class="wf-badge wf-on">Actif</span>
+        </div>
+        <div class="wf-row">
+          <div>
+            <div class="wf-name">Relance no-show</div>
+            <div class="wf-desc">RDV passé sans présence → attente 30 min → SMS automatique</div>
+          </div>
+          <span class="wf-badge wf-on">Actif</span>
+        </div>
+        <div class="wf-row">
+          <div>
+            <div class="wf-name">Ajout CRM automatique</div>
+            <div class="wf-desc">Appel Nathan sans réservation → prospect ajouté dans Clients</div>
+          </div>
+          <span class="wf-badge wf-on">Actif</span>
+        </div>
+        <div class="wf-row">
+          <div>
+            <div class="wf-name">Résumé quotidien</div>
+            <div class="wf-desc">Chaque soir à 20h → récap journée (RDV, CA, absents) par SMS</div>
+          </div>
+          <span class="wf-badge wf-on">Actif</span>
+        </div>
+        <div class="wf-row">
+          <div>
+            <div class="wf-name">Rappel J-1</div>
+            <div class="wf-desc">La veille du RDV → SMS de rappel automatique au client</div>
+          </div>
+          <span class="wf-badge wf-off">Inactif</span>
+        </div>
+        <div class="wf-row">
+          <div>
+            <div class="wf-name">Relance prospect 48h</div>
+            <div class="wf-desc">Prospect ajouté sans RDV → relance SMS après 48h de silence</div>
+          </div>
+          <span class="wf-badge wf-off">Inactif</span>
+        </div>
+      </div>
 
-      function formatHeure(raw) {
-        if (!raw) return '—';
-        const d = new Date(raw);
-        return d.toLocaleString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-      }
+      <div class="surface" style="padding:18px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:14px;">Activité récente</div>
+        <div id="wf-log">
+          <div class="hist-item">
+            <div class="hist-dot"></div>
+            <div style="flex:1;">
+              <div style="font-size:12px;font-weight:500;">Confirmation envoyée — Thomas M.</div>
+              <div style="font-size:11px;color:var(--text-3);">Aujourd'hui à 09:47 · Barbe</div>
+            </div>
+          </div>
+          <div class="hist-item">
+            <div class="hist-dot"></div>
+            <div style="flex:1;">
+              <div style="font-size:12px;font-weight:500;">Relance no-show — Nicolas P.</div>
+              <div style="font-size:11px;color:var(--text-3);">Aujourd'hui à 11:02 · Soin anti-acné</div>
+            </div>
+          </div>
+          <div class="hist-item">
+            <div class="hist-dot"></div>
+            <div style="flex:1;">
+              <div style="font-size:12px;font-weight:500;">Prospect ajouté — Adam H.</div>
+              <div style="font-size:11px;color:var(--text-3);">Hier à 16:33 · Appel sans réservation</div>
+            </div>
+          </div>
+          <div class="hist-item">
+            <div class="hist-dot" style="background:var(--border);"></div>
+            <div style="flex:1;">
+              <div style="font-size:12px;font-weight:500;">Résumé quotidien envoyé</div>
+              <div style="font-size:11px;color:var(--text-3);">Hier à 20:00 · 7 RDV · 516 € · 1 absent</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      function setNav(el) {
-        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-        el.classList.add('active');
-      }
+  </div><!-- /content -->
+</div><!-- /main -->
 
-      // ─── RENDER TABLE ─────────────────────────────────────────────────────────
-      function renderTable(appointments) {
-        const tbody = document.getElementById('leads-table');
-        if (!appointments || appointments.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" class="text-center py-12 text-gray-400 text-sm">En attente de données…</td></tr>';
-          return;
-        }
-        document.getElementById('total-badge').innerText = appointments.length + ' entrées';
+<!-- ──────────────── MODALS ──────────────── -->
 
-        tbody.innerHTML = appointments.map(a => {
-          const s = localRows[a.id] || { statut: 'attente', relanceSent: false };
-          const rowClass = s.statut === 'venu' ? 'row-venu' : s.statut === 'absent' ? 'row-absent' : '';
-          const btnAttente = `<button class="btn-raw${s.statut==='attente'?' active-venu':''}" onclick="setStatut(${a.id},'attente')">Attente</button>`;
-          const btnVenu    = `<button class="btn-raw${s.statut==='venu'?' active-venu':''}" onclick="setStatut(${a.id},'venu')">Venu</button>`;
-          const btnAbsent  = `<button class="btn-raw${s.statut==='absent'?' active-absent':''}" onclick="setStatut(${a.id},'absent')">Absent</button>`;
-          const btnPanique = s.statut === 'absent'
-            ? `<button class="btn-panique" onclick="openPanique(${a.id},'${a.prenom}')">⚡ Mode Panique</button>`
-            : '';
+<!-- CONTACTER (ex-panique) -->
+<div class="overlay" id="modal-contacter" onclick="closeOverlay('modal-contacter',event)">
+  <div class="modal">
+    <div class="modal-title">Contacter le client</div>
+    <div id="contact-preview" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:13px;font-size:13px;line-height:1.7;color:var(--text-2);margin-bottom:16px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="validerEnvoi()" class="btn btn-dark" style="flex:1;justify-content:center;padding:9px;">Confirmer l'envoi</button>
+      <button onclick="closeOverlay('modal-contacter')" class="btn" style="flex:1;justify-content:center;padding:9px;">Annuler</button>
+    </div>
+  </div>
+</div>
 
-          const noteVal = notes[a.id] || '';
-          const noteField = `<input class="note-input" id="note-${a.id}" placeholder="Note flash…" value="${noteVal.replace(/"/g,'&quot;')}" onchange="saveNote(${a.id},this.value)"/>`;
+<!-- ADD CLIENT -->
+<div class="overlay" id="modal-add-client" onclick="closeOverlay('modal-add-client',event)">
+  <div class="modal">
+    <div class="modal-title">Nouveau client</div>
+    <div class="grid-2">
+      <div><label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Nom</label><input id="p-nom" class="inp" placeholder="Dupont"></div>
+      <div><label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Prénom</label><input id="p-prenom" class="inp" placeholder="Thomas"></div>
+      <div><label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Email</label><input id="p-email" class="inp" type="email" placeholder="thomas@mail.fr"></div>
+      <div><label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Téléphone</label><input id="p-tel" class="inp" placeholder="06 12 34 56 78"></div>
+      <div class="col-2"><label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Service</label><input id="p-service" class="inp" placeholder="Barbe / Dos complet…"></div>
+      <div class="col-2"><label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Statut</label>
+        <select id="p-statut" class="inp"><option>Prospect chaud</option><option>A rappeler</option><option>Liste d'attente</option><option>Client fidèle</option></select>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button onclick="saveClient()" class="btn btn-dark" style="flex:1;justify-content:center;padding:9px;">Ajouter</button>
+      <button onclick="closeOverlay('modal-add-client')" class="btn" style="flex:1;justify-content:center;padding:9px;">Annuler</button>
+    </div>
+  </div>
+</div>
 
-          let relanceHtml;
-          if (s.relanceSent) {
-            relanceHtml = '<span class="relance-sent">SMS envoyé</span>';
-          } else if (a.relance === 'fail') {
-            relanceHtml = `<span class="relance-fail">Échec d'envoi</span><button class="btn-relancer" onclick="relancerManuellement(${a.id},this)">Relancer manuellement</button>`;
-          } else {
-            relanceHtml = '<span class="relance-ok">SMS envoyé ✓</span>';
-          }
+<!-- ADD WAITLIST -->
+<div class="overlay" id="modal-waitlist" onclick="closeOverlay('modal-waitlist',event)">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-title">Liste d'attente</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div><label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Prénom</label><input id="w-prenom" class="inp" placeholder="Yanis"></div>
+      <div><label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Téléphone</label><input id="w-tel" class="inp" placeholder="06 91 23 45 67"></div>
+      <div><label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Email</label><input id="w-email" class="inp" type="email" placeholder="yanis@mail.fr"></div>
+      <div><label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Prestation</label><input id="w-presta" class="inp" placeholder="Barbe / Dos complet…"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button onclick="saveWaitlist()" class="btn btn-dark" style="flex:1;justify-content:center;padding:9px;">Ajouter</button>
+      <button onclick="closeOverlay('modal-waitlist')" class="btn" style="flex:1;justify-content:center;padding:9px;">Annuler</button>
+    </div>
+  </div>
+</div>
 
-          return `<tr class="${rowClass}" id="row-${a.id}" data-prestation="${a.prestation}" data-prix="${a.prix}" data-prenom="${a.prenom}" data-tel="${a.telephone}">
-            <td class="text-gray-400 text-xs font-medium">${formatHeure(a.date_rdv)}</td>
-            <td>
-              <span class="cursor-pointer font-semibold hover:underline" onclick="toggleNote(${a.id})">${a.prenom}</span>
-              <button class="btn-raw ml-2" style="font-size:10px;padding:1px 6px;" onclick="window.open('https://web.whatsapp.com/','_blank')">WhatsApp</button>
-              <div id="note-wrap-${a.id}" style="display:${noteVal?'block':'none'}">${noteField}</div>
-            </td>
-            <td class="text-gray-600">${a.prestation}</td>
-            <td class="font-bold">${a.prix}€</td>
-            <td>
-              <div class="flex flex-wrap gap-1 items-center">
-                ${btnAttente}${btnVenu}${btnAbsent}
-              </div>
-              ${btnPanique}
-            </td>
-            <td>${relanceHtml}</td>
-            <td id="action-cell-${a.id}"></td>
-          </tr>`;
-        }).join('');
+<!-- TEMPLATE EDITOR -->
+<div class="overlay" id="modal-tmpl" onclick="closeOverlay('modal-tmpl',event)">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-title" id="tmpl-modal-title">Nouveau template</div>
+    <input type="hidden" id="edit-tmpl-id">
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div><label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Nom du template</label><input id="tmpl-name" class="inp" placeholder="Ex : Promo printemps"></div>
+      <div>
+        <label style="font-size:11px;font-weight:500;color:var(--text-2);display:block;margin-bottom:5px;">Message</label>
+        <textarea id="tmpl-text" class="inp" placeholder="Bonjour {prenom}, …"></textarea>
+      </div>
+      <div style="font-size:10px;color:var(--text-3);">Variables : {prenom} · {service} · {date} · {promo} · {lien}</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button onclick="saveTemplate()" class="btn btn-dark" style="flex:1;justify-content:center;padding:9px;">Enregistrer</button>
+      <button onclick="closeOverlay('modal-tmpl')" class="btn" style="flex:1;justify-content:center;padding:9px;">Annuler</button>
+    </div>
+  </div>
+</div>
 
-        updateAbsentCount();
-        renderWaitlist();
-      }
+<div id="toast"></div>
 
-      // ─── STATUT ───────────────────────────────────────────────────────────────
-      function setStatut(id, statut) {
-        if (!localRows[id]) localRows[id] = { statut: 'attente', relanceSent: false };
-        localRows[id].statut = statut;
-        rebuildRow(id);
-        updateAbsentCount();
-        renderWaitlist();
-        updateTaux();
-      }
+<script>
+// ─────────────── CONSTANTS ───────────────
+const CALENDLY = 'https://calendly.com/bounabatilias2004/reservation-institut-de-beaute';
+const PRIX_NATHAN = 297;
 
-      function rebuildRow(id) {
-        const row = document.getElementById('row-' + id);
-        if (!row) return;
-        const prenom     = row.dataset.prenom;
-        const prestation = row.dataset.prestation;
-        const prix       = row.dataset.prix;
-        const tel        = row.dataset.tel;
+// ─────────────── DEMO DATA ───────────────
+function rdv(h,m){const d=new Date();d.setHours(h,m,0,0);return d.toISOString();}
+const DEMO_APPTS = [
+  {id:1,prenom:'Karim',   telephone:'06 11 22 33 44',email:'karim@mail.fr',   prestation:'Dos complet',         prix:40, date_rdv:rdv(9,0),  relance:'ok'},
+  {id:2,prenom:'Thomas',  telephone:'06 22 33 44 55',email:'thomas@mail.fr',  prestation:'Barbe',               prix:24, date_rdv:rdv(9,45), relance:'ok'},
+  {id:3,prenom:'Nicolas', telephone:'06 33 44 55 66',email:'nicolas@mail.fr', prestation:'Soin anti-acné',      prix:70, date_rdv:rdv(10,30),relance:'fail'},
+  {id:4,prenom:'Antoine', telephone:'06 44 55 66 77',email:'antoine@mail.fr', prestation:'Massage bambous',     prix:85, date_rdv:rdv(11,15),relance:'ok'},
+  {id:5,prenom:'Mehdi',   telephone:'06 55 66 77 88',email:'mehdi@mail.fr',   prestation:'Torse + ventre',      prix:30, date_rdv:rdv(12,0), relance:'ok'},
+  {id:6,prenom:'Rayan',   telephone:'06 66 77 88 99',email:'rayan@mail.fr',   prestation:'Corps complet',       prix:132,date_rdv:rdv(14,0), relance:'ok'},
+  {id:7,prenom:'Lucas',   telephone:'06 77 88 99 00',email:'lucas@mail.fr',   prestation:'Soin visage express', prix:55, date_rdv:rdv(15,30),relance:'ok'},
+  {id:8,prenom:'Julien',  telephone:'06 88 99 00 11',email:'julien@mail.fr',  prestation:'Blanchiment dentaire',prix:80, date_rdv:rdv(16,15),relance:'fail'},
+];
 
-        const s = localRows[id] || { statut: 'attente', relanceSent: false };
-        row.className = s.statut === 'venu' ? 'row-venu' : s.statut === 'absent' ? 'row-absent' : '';
+let WAITLIST = JSON.parse(localStorage.getItem('ow_wl')||'null') || [
+  {id:'w1',prenom:'Yanis', telephone:'06 91 23 45 67',email:'yanis@mail.fr', prestation:'Dos complet'},
+  {id:'w2',prenom:'Sami',  telephone:'06 82 34 56 78',email:'',              prestation:'Barbe'},
+  {id:'w3',prenom:'Kevin', telephone:'06 73 45 67 89',email:'kevin@mail.fr', prestation:'Massage bambous'},
+];
 
-        const statusCell = row.children[4];
-        const btnAttente = `<button class="btn-raw${s.statut==='attente'?' active-venu':''}" onclick="setStatut(${id},'attente')">Attente</button>`;
-        const btnVenu    = `<button class="btn-raw${s.statut==='venu'?' active-venu':''}" onclick="setStatut(${id},'venu')">Venu</button>`;
-        const btnAbsent  = `<button class="btn-raw${s.statut==='absent'?' active-absent':''}" onclick="setStatut(${id},'absent')">Absent</button>`;
-        const btnPanique = s.statut === 'absent'
-          ? `<button class="btn-panique" onclick="openPanique(${id},'${prenom}')">⚡ Mode Panique</button>`
-          : '';
-        statusCell.innerHTML = `<div class="flex flex-wrap gap-1 items-center">${btnAttente}${btnVenu}${btnAbsent}</div>${btnPanique}`;
-      }
+let CLIENTS = JSON.parse(localStorage.getItem('ow_clients')||'null') || [
+  {id:1, nom:'Benali',  prenom:'Karim',   email:'karim@mail.fr',   tel:'06 11 22 33 44',service:'Dos complet',         statut:'Client fidèle', date:'15/01/2025',checked:false},
+  {id:2, nom:'Morel',   prenom:'Thomas',  email:'thomas@mail.fr',  tel:'06 22 33 44 55',service:'Barbe',               statut:'Client fidèle', date:'03/02/2025',checked:false},
+  {id:3, nom:'Petit',   prenom:'Nicolas', email:'nicolas@mail.fr', tel:'06 33 44 55 66',service:'Soin anti-acné',      statut:'A rappeler',    date:'20/02/2025',checked:false},
+  {id:4, nom:'Bernard', prenom:'Antoine', email:'antoine@mail.fr', tel:'06 44 55 66 77',service:'Massage bambous',     statut:'Client fidèle', date:'28/01/2025',checked:false},
+  {id:5, nom:'Kaci',    prenom:'Mehdi',   email:'mehdi@mail.fr',   tel:'06 55 66 77 88',service:'Torse + ventre',      statut:'Prospect chaud',date:'01/03/2025',checked:false},
+  {id:6, nom:'Dupont',  prenom:'Rayan',   email:'rayan@mail.fr',   tel:'06 66 77 88 99',service:'Corps complet',       statut:'Liste d\'attente',date:'05/03/2025',checked:false},
+  {id:7, nom:'Martin',  prenom:'Lucas',   email:'lucas@mail.fr',   tel:'06 77 88 99 00',service:'Soin visage express', statut:'Client fidèle', date:'10/01/2025',checked:false},
+  {id:8, nom:'Laurent', prenom:'Julien',  email:'julien@mail.fr',  tel:'06 88 99 00 11',service:'Blanchiment dentaire',statut:'A rappeler',    date:'15/02/2025',checked:false},
+  {id:9, nom:'Hamid',   prenom:'Adam',    email:'adam.h@mail.fr',  tel:'06 12 98 76 54',service:'Epilation aisselles', statut:'Prospect chaud',date:'10/04/2025',checked:false},
+  {id:10,nom:'Nguyen',  prenom:'Théo',    email:'theo.n@mail.fr',  tel:'06 45 67 89 01',service:'Maillot',             statut:'A rappeler',    date:'22/04/2025',checked:false},
+];
 
-      // ─── NOTE FLASH ──────────────────────────────────────────────────────────
-      function toggleNote(id) {
-        const wrap = document.getElementById('note-wrap-' + id);
-        if (!wrap) return;
-        const visible = wrap.style.display !== 'none';
-        wrap.style.display = visible ? 'none' : 'block';
-        if (!visible) {
-          const inp = document.getElementById('note-' + id);
-          if (inp) inp.focus();
-        }
-      }
+let TEMPLATES = JSON.parse(localStorage.getItem('ow_tmpl')||'null') || [
+  {id:1,name:'Rappel RDV',        text:"Bonjour {prenom}, rappel de votre RDV pour {service} chez O'Walker Institut. A bientôt !"},
+  {id:2,name:'Relance -15%',      text:"Bonjour {prenom}, vous nous manquez. Profitez de -15% sur votre prochain {service} avec le code OWALKER15. Reservez : {lien}"},
+  {id:3,name:'Absence',           text:"Bonjour {prenom}, nous avons constaté votre absence au RDV de ce jour. Reprenez RDV quand vous le souhaitez : {lien}"},
+  {id:4,name:'Fidelite -20%',     text:"Bonjour {prenom}, merci pour votre fidelite. -20% sur votre prochain {service} avec le code FIDELE20. Reservez : {lien}"},
+  {id:5,name:'Nouveau service',   text:"Bonjour {prenom}, decouvrez notre offre {service} a prix special cette semaine. Reservez : {lien}"},
+];
 
-      function saveNote(id, val) {
-        notes[id] = val;
-        saveNotes();
-      }
+let MSG_HISTORY = JSON.parse(localStorage.getItem('ow_hist')||'[]');
 
-      // ─── MODAL PANIQUE ───────────────────────────────────────────────────────
-      function openPanique(id, prenom) {
-        currentPaniqueId = id;
-        document.getElementById('sms-preview').innerHTML =
-          `Bonjour <strong>${prenom}</strong>, nous avons constaté votre absence à votre rendez-vous d'aujourd'hui.<br><br>` +
-          `Nous comprenons que des imprévus arrivent. Reprenez rendez-vous dès maintenant à l'heure qui vous convient :<br><br>` +
-          `<strong>https://calendly.com/bounabatilias2004/reservation-institut-de-beaute</strong><br><br>` +
-          `À très bientôt,<br>L'équipe BeautyVoice`;
-        document.getElementById('modal-overlay').classList.add('open');
-      }
+// ─────────────── STATE ───────────────
+const notes = JSON.parse(localStorage.getItem('ow_notes')||'{}');
+let localRows = {};
+let absentCount = 0;
+let contactId = null;
+let selRelTemplate = null;
 
-      function closeModal(e) {
-        if (e.target === document.getElementById('modal-overlay'))
-          document.getElementById('modal-overlay').classList.remove('open');
-      }
+// ─────────────── PERSIST ───────────────
+const save = {
+  clients   : () => localStorage.setItem('ow_clients', JSON.stringify(CLIENTS)),
+  waitlist  : () => localStorage.setItem('ow_wl',      JSON.stringify(WAITLIST)),
+  notes     : () => localStorage.setItem('ow_notes',   JSON.stringify(notes)),
+  templates : () => localStorage.setItem('ow_tmpl',    JSON.stringify(TEMPLATES)),
+  history   : () => localStorage.setItem('ow_hist',    JSON.stringify(MSG_HISTORY)),
+};
 
-      function validerEnvoi() {
-        document.getElementById('modal-overlay').classList.remove('open');
-        if (currentPaniqueId !== null) {
-          if (!localRows[currentPaniqueId]) localRows[currentPaniqueId] = {};
-          localRows[currentPaniqueId].relanceSent = true;
-          const row = document.getElementById('row-' + currentPaniqueId);
-          if (row) row.children[5].innerHTML = '<span class="relance-sent">SMS envoyé</span>';
-        }
-      }
+// ─────────────── HELPERS ───────────────
+function fmt(raw){ if(!raw)return'—'; const d=new Date(raw); return d.toLocaleString('fr-FR',{hour:'2-digit',minute:'2-digit'}); }
+function toast(msg,dur=2600){ const t=document.getElementById('toast'); t.textContent=msg; t.style.opacity='1'; setTimeout(()=>{t.style.opacity='0';},dur); }
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeOverlay(id,e){ if(e&&e.target!==document.getElementById(id))return; document.getElementById(id).classList.remove('open'); }
+function applyVars(text,prenom,service){
+  return text.replace(/\{prenom\}/g,prenom||'Client')
+             .replace(/\{service\}/g,service||'votre soin')
+             .replace(/\{lien\}/g,CALENDLY)
+             .replace(/\{promo\}/g,'OWALKER15')
+             .replace(/\{date\}/g,new Date().toLocaleDateString('fr-FR'));
+}
+function statusTag(s){
+  const m={'Client fidèle':'tag-green','Prospect chaud':'tag-amber','A rappeler':'tag-red',"Liste d'attente":'tag-blue'};
+  return `<span class="tag ${m[s]||''}">${s}</span>`;
+}
 
-      // ─── RELANCE MANUELLE ─────────────────────────────────────────────────────
-      function relancerManuellement(id, btn) {
-        btn.disabled = true;
-        btn.innerText = '…';
-        setTimeout(() => {
-          if (!localRows[id]) localRows[id] = {};
-          localRows[id].relanceSent = true;
-          const row = document.getElementById('row-' + id);
-          if (row) row.children[5].innerHTML = '<span class="relance-ok">SMS renvoyé ✓</span>';
-        }, 800);
-      }
+// ─────────────── TABS ───────────────
+const TAB_TITLES = {
+  agenda:'Agenda du jour', clients:'Clients & Prospects', messages:'Messages',
+  relances:'Relances', statistiques:'Statistiques', fiches:'Fiches produits',
+  workflows:'Automations Make',
+};
+function setTab(el){
+  document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  const tab=el.dataset.tab;
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('topbar-title').textContent=TAB_TITLES[tab]||tab;
+  if(tab==='clients')      { renderClients(); updateRecipCounts(); }
+  if(tab==='messages')     { renderMsgTemplates(); updatePreview(); renderMsgHistory(); updateRecipCounts(); }
+  if(tab==='relances')     { renderRelTemplates(); renderRelancesTable(); }
+  if(tab==='statistiques') renderStats();
+  if(tab==='fiches')       renderFiches();
+}
+document.querySelectorAll('[data-tab]').forEach(el=>el.addEventListener('click',()=>setTab(el)));
+function goMessages(){ setTab(document.querySelector('[data-tab=messages]')); }
 
-      // ─── LISTE D'ATTENTE ─────────────────────────────────────────────────────
-      function updateAbsentCount() {
-        absentCount = Object.values(localRows).filter(r => r.statut === 'absent').length;
-      }
+// ─────────────── AGENDA ───────────────
+function renderTable(appts){
+  const tbody=document.getElementById('leads-table');
+  if(!appts||!appts.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:36px;color:var(--text-3);">Aucune donnée.</td></tr>';return;}
+  document.getElementById('total-badge').textContent=appts.length+' rendez-vous';
+  tbody.innerHTML=appts.map(a=>{
+    const s=localRows[a.id]||{statut:'attente',relanceSent:false};
+    const rc=s.statut==='venu'?'row-venu':s.statut==='absent'?'row-absent':'';
+    const btns=['attente','venu','absent'].map(v=>`<button class="sbtn${s.statut===v?(v==='absent'?' sa':' sv'):''}" onclick="setStatut(${a.id},'${v}')">${v[0].toUpperCase()+v.slice(1)}</button>`).join(' ');
+    const ctact=s.statut==='absent'?`<button class="btn-contact" onclick="openContact(${a.id},'${a.prenom}','${a.prestation}')">Contacter</button>`:'';
+    const nv=(notes[a.id]||'').replace(/"/g,'&quot;');
+    let rel;
+    if(s.relanceSent)rel='<span class="rel-sent">Envoye</span>';
+    else if(a.relance==='fail')rel=`<span class="rel-fail">Echec</span><button class="btn-rel" onclick="relancerManuel(${a.id},this)">Renvoyer</button>`;
+    else rel='<span class="rel-ok">Envoye</span>';
+    return`<tr class="${rc}" id="row-${a.id}" data-prenom="${a.prenom}" data-presta="${a.prestation}" data-prix="${a.prix}" data-tel="${a.telephone}">
+      <td style="font-size:11px;color:var(--text-3);font-variant-numeric:tabular-nums;">${fmt(a.date_rdv)}</td>
+      <td>
+        <span style="font-weight:500;cursor:pointer;" onclick="toggleNote(${a.id})">${a.prenom}</span>
+        <div id="nw-${a.id}" style="display:${nv?'block':'none'}"><input class="note-inp" id="note-${a.id}" placeholder="Note…" value="${nv}" onchange="saveNote(${a.id},this.value)"></div>
+      </td>
+      <td style="color:var(--text-2);font-size:12px;">${a.prestation}</td>
+      <td style="font-weight:600;">${a.prix}€</td>
+      <td><div style="display:flex;flex-wrap:wrap;gap:4px;">${btns}</div>${ctact}</td>
+      <td>${rel}</td>
+      <td><button class="btn btn-sm btn-ghost" onclick="window.open('https://web.whatsapp.com/','_blank')">WA</button></td>
+    </tr>`;
+  }).join('');
+  updateAbsentCount();renderWaitlistPanel();updateKPIs(appts);
+}
 
-      function renderWaitlist() {
-        const container = document.getElementById('waitlist');
-        container.innerHTML = WAITLIST.map(w => {
-          const canFill = absentCount > 0;
-          return `<div class="waitlist-card" id="witem-${w.id}">
-            <p class="font-bold text-sm">${w.prenom}</p>
-            <p class="text-xs text-gray-500 mt-0.5">${w.prestation}</p>
-            <p class="text-xs text-gray-400">${w.telephone}</p>
-            <button class="btn-combler${canFill?' visible':''}" onclick="comblerCreneau('${w.id}')">Combler le créneau</button>
-          </div>`;
-        }).join('');
-      }
+function toggleNote(id){const w=document.getElementById('nw-'+id);if(!w)return;w.style.display=w.style.display==='none'?'block':'none';if(w.style.display==='block')document.getElementById('note-'+id)?.focus();}
+function saveNote(id,v){notes[id]=v;save.notes();}
 
-      function comblerCreneau(waitId) {
-        const absentId = Object.keys(localRows).find(id => localRows[id].statut === 'absent');
-        if (!absentId) return;
+function setStatut(id,statut){
+  if(!localRows[id])localRows[id]={statut:'attente',relanceSent:false};
+  localRows[id].statut=statut;rebuildRow(id);updateAbsentCount();renderWaitlistPanel();updateTaux();
+}
+function rebuildRow(id){
+  const row=document.getElementById('row-'+id);if(!row)return;
+  const {prenom,presta}=row.dataset;
+  const s=localRows[id]||{statut:'attente'};
+  row.className=s.statut==='venu'?'row-venu':s.statut==='absent'?'row-absent':'';
+  const btns=['attente','venu','absent'].map(v=>`<button class="sbtn${s.statut===v?(v==='absent'?' sa':' sv'):''}" onclick="setStatut(${id},'${v}')">${v[0].toUpperCase()+v.slice(1)}</button>`).join(' ');
+  const ctact=s.statut==='absent'?`<button class="btn-contact" onclick="openContact(${id},'${prenom}','${presta}')">Contacter</button>`:'';
+  row.children[4].innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:4px;">${btns}</div>${ctact}`;
+}
+function updateAbsentCount(){
+  absentCount=Object.values(localRows).filter(r=>r.statut==='absent').length;
+  document.getElementById('kpi-absents').textContent=absentCount;
+  const sub=document.getElementById('kpi-abs-sub');
+  sub.style.display=absentCount?'block':'none';
+  sub.textContent=absentCount?' rendez-vous manqués':'';
+}
+function updateTaux(){
+  const total=Math.max(Object.keys(localRows).length,DEMO_APPTS.length);
+  const venus=Object.values(localRows).filter(r=>r.statut==='venu').length;
+  if(!total)return;
+  document.getElementById('taux-presence').textContent=Math.round(venus/total*100)+'%';
+}
+function relancerManuel(id,btn){
+  btn.disabled=true;btn.textContent='…';
+  setTimeout(()=>{
+    if(!localRows[id])localRows[id]={};localRows[id].relanceSent=true;
+    const row=document.getElementById('row-'+id);
+    if(row)row.children[5].innerHTML='<span class="rel-ok">Envoye</span>';
+  },600);
+}
+function updateKPIs(appts){
+  if(!appts||!appts.length)return;
+  const rev=appts.reduce((s,a)=>s+(a.prix||0),0);
+  const pan=Math.round(rev/appts.length);
+  document.getElementById('kpi-panier').textContent=pan+'€';
+  document.getElementById('kpi-revenue').textContent=rev+'€';
+}
 
-        const waitClient = WAITLIST.find(w => w.id === waitId);
-        if (!waitClient) return;
+// ─────────────── CONTACT (ex-panique) ───────────────
+function openContact(id,prenom,presta){
+  contactId=id;
+  const msg=`Bonjour ${prenom}, nous avons constaté votre absence à votre rendez-vous pour ${presta} aujourd'hui.\n\nVous pouvez reprendre rendez-vous ici : ${CALENDLY}\n\nA bientôt, O'Walker Institut.`;
+  document.getElementById('contact-preview').textContent=msg;
+  openModal('modal-contacter');
+}
+function validerEnvoi(){
+  closeOverlay('modal-contacter');
+  if(contactId!==null){
+    if(!localRows[contactId])localRows[contactId]={};localRows[contactId].relanceSent=true;
+    const row=document.getElementById('row-'+contactId);
+    if(row)row.children[5].innerHTML='<span class="rel-sent">Envoye</span>';
+  }
+  addHist('Contact','SMS absence envoye',1);toast('SMS envoye.');
+}
 
-        const row = document.getElementById('row-' + absentId);
-        if (!row) return;
+// ─────────────── WAITLIST ───────────────
+function renderWaitlistPanel(){
+  const c=document.getElementById('waitlist');
+  c.innerHTML=WAITLIST.map(w=>`
+    <div class="wcard" id="wi-${w.id}">
+      <div style="font-weight:600;font-size:13px;">${w.prenom}</div>
+      <div style="font-size:11px;color:var(--text-2);margin-top:2px;">${w.prestation}</div>
+      <div style="font-size:11px;color:var(--text-3);">${w.telephone}</div>
+      ${w.email?`<div style="font-size:11px;color:var(--text-3);">${w.email}</div>`:''}
+      <button class="btn-fill${absentCount>0?' vis':''}" onclick="combler('${w.id}')">Placer sur le creneau</button>
+    </div>`).join('');
+}
+function saveWaitlist(){
+  const prenom=document.getElementById('w-prenom').value.trim();
+  const tel=document.getElementById('w-tel').value.trim();
+  if(!prenom||!tel){toast('Prénom et téléphone requis.');return;}
+  WAITLIST.push({id:'w'+Date.now(),prenom,telephone:tel,email:document.getElementById('w-email').value.trim(),prestation:document.getElementById('w-presta').value.trim()||'—'});
+  save.waitlist();renderWaitlistPanel();closeOverlay('modal-waitlist');
+  ['w-prenom','w-tel','w-email','w-presta'].forEach(id=>document.getElementById(id).value='');
+  toast('Ajouté à la liste d\'attente.');
+}
+function combler(wid){
+  const absentId=Object.keys(localRows).find(id=>localRows[id].statut==='absent');if(!absentId)return;
+  const w=WAITLIST.find(x=>x.id===wid);if(!w)return;
+  const row=document.getElementById('row-'+absentId);if(!row)return;
+  row.dataset.prenom=w.prenom;row.dataset.presta=w.prestation;
+  row.children[1].querySelector('span').textContent=w.prenom;
+  row.children[2].textContent=w.prestation;
+  localRows[absentId].statut='venu';rebuildRow(parseInt(absentId));
+  const wi=document.getElementById('wi-'+wid);
+  if(wi){wi.style.opacity='.4';wi.style.pointerEvents='none';}
+  updateAbsentCount();renderWaitlistPanel();updateTaux();toast(`${w.prenom} placé sur le créneau.`);
+}
 
-        row.dataset.prenom = waitClient.prenom;
-        row.dataset.prestation = waitClient.prestation;
-        row.dataset.tel = waitClient.telephone;
+// ─────────────── CLIENTS ───────────────
+function renderClients(filter=''){
+  const tbody=document.getElementById('clients-table');
+  const list=filter?CLIENTS.filter(p=>[p.nom,p.prenom,p.email,p.tel,p.service,p.statut].some(v=>(v||'').toLowerCase().includes(filter.toLowerCase()))):CLIENTS;
+  tbody.innerHTML=list.map(p=>`<tr>
+    <td><input type="checkbox" ${p.checked?'checked':''} onchange="toggleC(${p.id},this)"></td>
+    <td style="font-weight:500;">${p.nom}</td><td>${p.prenom}</td>
+    <td style="font-size:11px;color:var(--text-2);">${p.email||'—'}</td>
+    <td style="font-size:11px;color:var(--text-2);">${p.tel}</td>
+    <td style="font-size:11px;color:var(--text-2);">${p.service||'—'}</td>
+    <td>${statusTag(p.statut)}</td>
+    <td style="font-size:11px;color:var(--text-3);">${p.date}</td>
+    <td style="display:flex;gap:4px;">
+      <button class="btn btn-sm" onclick="prefillMsg('${p.prenom}','${p.service}')">SMS</button>
+      <button class="btn btn-sm btn-red" onclick="deleteClient(${p.id})">Suppr.</button>
+    </td>
+  </tr>`).join('');
+  const n=CLIENTS.length;
+  document.getElementById('clients-count').textContent=list.length+' entrées · '+CLIENTS.filter(p=>p.checked).length+' sélectionnés';
+  document.getElementById('nb-clients').textContent=n;
+}
+function filterClients(){renderClients(document.getElementById('crm-search').value);}
+function toggleC(id,el){const p=CLIENTS.find(x=>x.id===id);if(p){p.checked=el.checked;save.clients();renderClients(document.getElementById('crm-search').value||'');}}
+function toggleAll(el){CLIENTS.forEach(p=>p.checked=el.checked);save.clients();renderClients(document.getElementById('crm-search').value||'');}
+function saveClient(){
+  const nom=document.getElementById('p-nom').value.trim();const prenom=document.getElementById('p-prenom').value.trim();
+  if(!nom&&!prenom){toast('Nom ou prénom requis.');return;}
+  CLIENTS.push({id:Date.now(),nom,prenom,email:document.getElementById('p-email').value.trim(),tel:document.getElementById('p-tel').value.trim(),service:document.getElementById('p-service').value.trim(),statut:document.getElementById('p-statut').value,date:new Date().toLocaleDateString('fr-FR'),checked:false});
+  save.clients();renderClients();closeOverlay('modal-add-client');toast('Client ajouté.');
+}
+function deleteClient(id){CLIENTS=CLIENTS.filter(p=>p.id!==id);save.clients();renderClients(document.getElementById('crm-search').value||'');}
+function deleteSelected(){const n=CLIENTS.filter(p=>p.checked).length;if(!n){toast('Aucune sélection.');return;}CLIENTS=CLIENTS.filter(p=>!p.checked);save.clients();renderClients();toast(n+' supprimé(s).');}
+function prefillMsg(prenom,service){
+  goMessages();
+  setTimeout(()=>{document.getElementById('msg-body').value=`Bonjour ${prenom}, nous avons une offre speciale sur ${service}. Reservez maintenant : ${CALENDLY}`;updatePreview();},80);
+}
 
-        row.children[1].querySelector('span').innerText = waitClient.prenom;
-        row.children[2].innerText = waitClient.prestation;
+// ─────────────── TEMPLATES ───────────────
+function renderMsgTemplates(){
+  const c=document.getElementById('tmpl-list');
+  c.innerHTML=TEMPLATES.map(t=>`
+    <div class="tmpl-item" id="tmpl-${t.id}" onclick="loadTemplate(${t.id})">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="t-name">${t.name}</div>
+        <div style="display:flex;gap:3px;" onclick="event.stopPropagation()">
+          <button class="btn btn-sm btn-ghost" onclick="editTemplate(${t.id})" style="padding:2px 7px;font-size:10px;">Modifier</button>
+          <button class="btn btn-sm btn-ghost btn-red" onclick="deleteTmpl(${t.id})" style="padding:2px 7px;font-size:10px;">Suppr.</button>
+        </div>
+      </div>
+      <div class="t-prev">${t.text}</div>
+    </div>`).join('');
+}
+function loadTemplate(id){
+  const t=TEMPLATES.find(x=>x.id===id);if(!t)return;
+  document.getElementById('msg-body').value=t.text;
+  document.querySelectorAll('.tmpl-item').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('tmpl-'+id)?.classList.add('sel');
+  updatePreview();
+}
+function newTemplate(){
+  document.getElementById('tmpl-modal-title').textContent='Nouveau template';
+  document.getElementById('edit-tmpl-id').value='';
+  document.getElementById('tmpl-name').value='';document.getElementById('tmpl-text').value='';
+  openModal('modal-tmpl');
+}
+function editTemplate(id){
+  const t=TEMPLATES.find(x=>x.id===id);if(!t)return;
+  document.getElementById('tmpl-modal-title').textContent='Modifier le template';
+  document.getElementById('edit-tmpl-id').value=id;
+  document.getElementById('tmpl-name').value=t.name;document.getElementById('tmpl-text').value=t.text;
+  openModal('modal-tmpl');
+}
+function deleteTmpl(id){TEMPLATES=TEMPLATES.filter(t=>t.id!==id);save.templates();renderMsgTemplates();toast('Template supprimé.');}
+function saveTemplate(){
+  const editId=document.getElementById('edit-tmpl-id').value;
+  const name=document.getElementById('tmpl-name').value.trim();
+  const text=document.getElementById('tmpl-text').value.trim();
+  if(!name||!text){toast('Nom et texte requis.');return;}
+  if(editId){const t=TEMPLATES.find(x=>x.id==editId);if(t){t.name=name;t.text=text;}}
+  else TEMPLATES.push({id:Date.now(),name,text});
+  save.templates();renderMsgTemplates();closeOverlay('modal-tmpl');toast('Template enregistré.');
+}
 
-        localRows[absentId].statut = 'venu';
-        rebuildRow(parseInt(absentId));
+// ─────────────── COMPOSER ───────────────
+function insertVar(v){const ta=document.getElementById('msg-body');const s=ta.selectionStart,e=ta.selectionEnd;ta.value=ta.value.substring(0,s)+v+ta.value.substring(e);ta.selectionStart=ta.selectionEnd=s+v.length;ta.focus();updatePreview();}
+function updatePreview(){
+  const text=document.getElementById('msg-body').value;
+  document.getElementById('msg-preview').textContent=text?applyVars(text,'Thomas','Barbe'):'Rédigez un message pour voir l\'aperçu.';
+}
+function updateRecipCounts(){
+  document.getElementById('count-all').textContent=CLIENTS.length+' contacts';
+  document.getElementById('count-rappel').textContent=CLIENTS.filter(p=>p.statut==='A rappeler').length+' contacts';
+  document.getElementById('count-chaud').textContent=CLIENTS.filter(p=>p.statut==='Prospect chaud').length+' contacts';
+  document.getElementById('count-sel').textContent=CLIENTS.filter(p=>p.checked).length+' cochés dans Clients';
+}
+function updateRecip(el){
+  document.querySelectorAll('.recip-opt').forEach(r=>r.classList.remove('sel'));
+  el.closest('.recip-opt').classList.add('sel');
+}
+function sendMessage(){
+  const text=document.getElementById('msg-body').value.trim();
+  if(!text){toast('Rédigez un message.');return;}
+  const subject=document.getElementById('msg-subject').value.trim()||'Campagne';
+  const recip=document.querySelector('input[name=recip]:checked')?.value||'all';
+  let list;
+  if(recip==='all')list=CLIENTS;
+  else if(recip==='rappel')list=CLIENTS.filter(p=>p.statut==='A rappeler');
+  else if(recip==='chaud')list=CLIENTS.filter(p=>p.statut==='Prospect chaud');
+  else list=CLIENTS.filter(p=>p.checked);
+  if(!list.length){toast('Aucun destinataire.');return;}
+  addHist(subject,'Envoi groupé — '+list.length+' contacts',list.length);
+  document.getElementById('msg-body').value='';document.getElementById('msg-subject').value='';
+  updatePreview();renderMsgHistory();toast(list.length+' SMS envoyés.');
+}
+function addHist(subject,detail,count){
+  MSG_HISTORY.unshift({subject,detail,count,date:new Date().toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});
+  if(MSG_HISTORY.length>40)MSG_HISTORY=MSG_HISTORY.slice(0,40);
+  save.history();
+}
+function renderMsgHistory(){
+  const c=document.getElementById('msg-history');
+  if(!MSG_HISTORY.length){c.innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--text-3);">Aucun envoi pour le moment.</div>';return;}
+  c.innerHTML=MSG_HISTORY.slice(0,12).map(h=>`
+    <div class="hist-item">
+      <div class="hist-dot"></div>
+      <div style="flex:1;">
+        <div style="font-size:12px;font-weight:500;">${h.subject}</div>
+        <div style="font-size:11px;color:var(--text-3);">${h.detail} · ${h.date}</div>
+      </div>
+      <span style="font-size:10px;font-weight:500;color:var(--text-3);">${h.count} envois</span>
+    </div>`).join('');
+}
 
-        const witem = document.getElementById('witem-' + waitId);
-        if (witem) {
-          witem.style.opacity = '0.35';
-          witem.style.pointerEvents = 'none';
-          witem.querySelector('.btn-combler').style.display = 'none';
-        }
+// ─────────────── RELANCES ───────────────
+function renderRelTemplates(){
+  const c=document.getElementById('rel-tmpl-list');
+  c.innerHTML=TEMPLATES.map(t=>`
+    <div class="tmpl-item${selRelTemplate?.id===t.id?' sel':''}" onclick="selectRelTmpl(${t.id})">
+      <div class="t-name">${t.name}</div>
+    </div>`).join('');
+}
+function selectRelTmpl(id){
+  selRelTemplate=TEMPLATES.find(t=>t.id===id);renderRelTemplates();
+  if(selRelTemplate)document.getElementById('rel-preview').textContent=applyVars(selRelTemplate.text,'{prenom}','{service}');
+}
+function renderRelancesTable(){
+  const tbody=document.getElementById('relances-table');
+  const list=[
+    ...DEMO_APPTS.filter((_,i)=>{const s=localRows[DEMO_APPTS[i].id];return !s||s.statut!=='venu';}).map(a=>({prenom:a.prenom,tel:a.telephone,service:a.prestation,date:'Aujourd\'hui',statut:'absent'})),
+    ...CLIENTS.filter(p=>p.statut==='A rappeler').map(p=>({prenom:p.prenom,tel:p.tel,service:p.service,date:p.date,statut:'rappel'})),
+  ];
+  tbody.innerHTML=list.map(r=>`<tr>
+    <td style="font-weight:500;">${r.prenom}</td>
+    <td style="font-size:11px;color:var(--text-3);">${r.tel}</td>
+    <td style="font-size:11px;color:var(--text-2);">${r.service}</td>
+    <td style="font-size:11px;color:var(--text-3);">${r.date}</td>
+    <td><span class="tag ${r.statut==='absent'?'tag-red':'tag-amber'}">${r.statut==='absent'?'Absent':'A rappeler'}</span></td>
+    <td><button class="btn btn-sm" onclick="sendOneRel('${r.prenom}','${r.service}')">Envoyer</button></td>
+  </tr>`).join('');
+}
+function sendOneRel(prenom,service){
+  if(!selRelTemplate){toast('Sélectionnez un template.');return;}
+  addHist(selRelTemplate.name,'Envoye à '+prenom,1);toast('SMS envoye à '+prenom+'.');
+}
+function sendAllRelances(){
+  if(!selRelTemplate){toast('Sélectionnez un template.');return;}
+  const n=Object.values(localRows).filter(r=>r.statut==='absent').length||3;
+  addHist(selRelTemplate.name,'Envoi groupé absents',n);toast(n+' SMS envoyés.');
+}
 
-        updateAbsentCount();
-        renderWaitlist();
-        updateTaux();
-      }
+// ─────────────── STATS ───────────────
+function renderStats(){
+  const rev=DEMO_APPTS.reduce((s,a)=>s+a.prix,0);
+  const pan=Math.round(rev/DEMO_APPTS.length);
+  const rdvDay=DEMO_APPTS.length;
+  const caPess=Math.round(pan*rdvDay*30*0.75);
+  const caReal=Math.round(pan*rdvDay*30*0.95);
+  const gain=caReal-caPess;
+  const roi=(gain/PRIX_NATHAN).toFixed(1);
+  document.getElementById('stat-panier').textContent=pan+'€';
+  document.getElementById('stat-pessimiste').textContent=caPess.toLocaleString('fr-FR')+'€';
+  document.getElementById('stat-realiste').textContent=caReal.toLocaleString('fr-FR')+'€';
+  document.getElementById('stat-gain').textContent='+'+gain.toLocaleString('fr-FR')+'€ / mois';
+  document.getElementById('stat-roi').textContent=roi+'× ROI';
+  const svcs={};DEMO_APPTS.forEach(a=>{svcs[a.prestation]=(svcs[a.prestation]||0)+a.prix;});
+  const maxV=Math.max(...Object.values(svcs));
+  document.getElementById('service-chart').innerHTML=Object.entries(svcs).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+    <div class="sbar-row">
+      <span class="sbar-lbl">${k}</span>
+      <div class="sbar-bg"><div class="sbar-fil" style="width:${Math.round(v/maxV*100)}%"></div></div>
+      <span class="sbar-val">${v}€</span>
+    </div>`).join('');
+}
 
-      // ─── TAUX ─────────────────────────────────────────────────────────────────
-      function updateTaux() {
-        const total = Object.keys(localRows).length || DEMO_APPOINTMENTS.length;
-        const venus = Object.values(localRows).filter(r => r.statut === 'venu').length;
-        if (total === 0) return;
-        const taux = Math.round((venus / total) * 100);
-        document.getElementById('taux-presence').innerText = taux + '%';
-      }
+// ─────────────── FICHES ───────────────
+const FICHES=[
+  {cat:"Epilation Lumiere Pulsee IPL",
+   desc:"Technologie IPL Stella V2 par Corpoderm, certifiee CE Medical 2020. Destruction definitive du follicule pileux par lumiere pulsee intense.",
+   bens:["Resultat permanent des la 1re seance","Non-invasif et indolore","6 seances pour resultat optimal","Toutes zones du corps"],
+   ci:["Peau bronzee","Grossesse","Medicaments photosensibilisants","Phototype VI"],
+   pitch:"Notre IPL Stella V2 est la meme technologie qu'en cabinet medical. Permanent, indolore, 6x moins cher que le laser. Vous n'y revenez plus jamais.",
+   svcs:[{n:'Barbe',p:'80€/seance',pk:'Pack 6 = 400€'},{n:'Aisselles',p:'50€/seance',pk:'Pack 6 = 250€'},{n:'Dos / Torse',p:'140€/seance',pk:'Pack 6 = 700€'},{n:'Demi-jambes',p:'180€/seance',pk:'Pack 6 = 900€'}]},
+  {cat:"Soins Visage",
+   desc:"Protocoles dermatologiques personnalises. Consultation Dr Janka disponible.",
+   bens:["Resultat visible des la 1re seance","Actifs certifies","Protocoles adaptes au type de peau"],
+   ci:["Peau irritee ou lesee","Allergie aux actifs"],
+   pitch:"Notre Hydrapure c'est le meme protocole qu'en cabinet dermatologique. En 1h la peau est transformee, eclat immediat.",
+   svcs:[{n:'Soin anti-acne',p:'70€',pk:'40 min'},{n:'Hydrapure',p:'110€',pk:'Cure 3 seances = 265€'},{n:'HIFU tenseur',p:'250€',pk:'1h'},{n:'Soin anti-age',p:'95€',pk:'1h10'}]},
+  {cat:"Massages & Corps",
+   desc:"Massages bien-etre premium. Pierres chaudes, bambous, gommage corps.",
+   bens:["Detente profonde","Relachement musculaire","Amelioration de la circulation"],
+   ci:["Fievre","Problemes cardiaques"],
+   pitch:"1h de detente totale pour 85€. Nos clients rappellent le lendemain pour rebooker — c'est ca la preuve.",
+   svcs:[{n:'Massage pierres chaudes',p:'85€',pk:'1h'},{n:'Massage bambous',p:'85€',pk:'1h'},{n:'Gommage corps',p:'60€',pk:'45 min'}]},
+  {cat:"Blanchiment Dentaire",
+   desc:"Traitement professionnel non-invasif. Jusqu'a 8 teintes plus blanc en 1h15.",
+   bens:["Resultat immediat","Non invasif","Prix imbattable vs clinique"],
+   ci:["Grossesse","Caries non traitees"],
+   pitch:"Sourire eclatant en 1h15 a 80€. En clinique dentaire c'est 300€+. Meme resultat. On a des places cette semaine.",
+   svcs:[{n:'Blanchiment dentaire',p:'80€',pk:'1h15'}]},
+];
+function renderFiches(){
+  document.getElementById('fiches-container').innerHTML=FICHES.map(f=>`
+    <div class="fiche">
+      <div style="margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;">${f.cat}</div>
+        <div style="font-size:12px;color:var(--text-2);margin-top:4px;">${f.desc}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+        <div>
+          <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;">Benefices</div>
+          ${f.bens.map(b=>`<div style="font-size:12px;color:var(--text-2);padding:2px 0;display:flex;gap:7px;"><span>+</span>${b}</div>`).join('')}
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;">Contre-indications</div>
+          ${f.ci.map(c=>`<div style="font-size:12px;color:var(--text-2);padding:2px 0;display:flex;gap:7px;"><span style="color:var(--text-3);">—</span>${c}</div>`).join('')}
+        </div>
+      </div>
+      <div class="fiche-pitch">
+        <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);margin-bottom:5px;">Pitch Nathan</div>
+        <div style="font-size:12px;color:var(--text-2);line-height:1.65;">"${f.pitch}"</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:7px;margin-top:12px;">
+        ${f.svcs.map(s=>`<div style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;">
+          <div style="font-size:12px;font-weight:500;">${s.n}</div>
+          <div style="font-size:14px;font-weight:700;margin-top:3px;">${s.p}</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:1px;">${s.pk}</div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
 
-      // ─── API POLLING ──────────────────────────────────────────────────────────
-      async function updateDashboard() {
-        try {
-          const res = await fetch('/api/dashboard-analytics');
-          if (!res.ok) throw new Error('no api');
-          const data = await res.json();
+// ─────────────── API ───────────────
+async function updateDashboard(){
+  try{
+    const res=await fetch('/api/dashboard-analytics');if(!res.ok)throw new Error();
+    const d=await res.json();
+    document.getElementById('kpi-calls').textContent=d.totalCalls??'—';
+    document.getElementById('kpi-rdv').textContent=d.totalRdv??'—';
+    document.getElementById('kpi-conv').textContent=d.conversionRate!=null?d.conversionRate+'%':'—';
+    if(d.appointments?.length){renderTable(d.appointments);return;}
+  }catch(_){}
+  document.getElementById('kpi-calls').textContent='24';
+  document.getElementById('kpi-rdv').textContent='8';
+  document.getElementById('kpi-conv').textContent='78%';
+  renderTable(DEMO_APPTS);
+}
 
-          document.getElementById('kpi-calls').innerText   = data.totalCalls   ?? '—';
-          document.getElementById('kpi-rdv').innerText     = data.totalRdv     ?? '—';
-          document.getElementById('kpi-conv').innerText    = (data.conversionRate ?? '—') + '%';
-          document.getElementById('kpi-revenue').innerText = (data.revenue       ?? '—') + '€';
-
-          if (data.appointments && data.appointments.length > 0) {
-            renderTable(data.appointments);
-            return;
-          }
-        } catch (_) {}
-        renderTable(DEMO_APPOINTMENTS);
-      }
-
-      // ─── INIT ─────────────────────────────────────────────────────────────────
-      renderTable(DEMO_APPOINTMENTS);
-      renderWaitlist();
-      updateDashboard();
-      setInterval(updateDashboard, 5000);
-    </script>
-  </body>
+// ─────────────── INIT ───────────────
+renderTable(DEMO_APPTS);
+renderWaitlistPanel();
+renderClients();
+renderMsgTemplates();
+renderMsgHistory();
+updateRecipCounts();
+updateDashboard();
+setInterval(updateDashboard,8000);
+</script>
+</body>
 </html>
